@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <meta name="description" content="Cupcake Gourmet: cupcakes artesanais feitos com carinho. Escolha seus sabores, monte seu carrinho e faça pedidos." />
+  <title>Cupcake Gourmet | Pequenos doces, grandes momentos</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+  <script src="/static/app.js" type="module"></script>
+</head>
+<body>
+  <div class="announcement">✨ Um toque de doçura em cada detalhe <span class="announcement-right">Entrega grátis em pedidos acima de R$ 80</span></div>
+  <header class="header" id="inicio">
+    <div class="nav container">
+      <a class="brand" href="#inicio" aria-label="Cupcake Gourmet, ir para o início"><span class="brand-icon" aria-hidden="true">✿</span><span>Cupcake<span class="brand-accent">Gourmet</span><small>CONFEITARIA ARTESANAL</small></span></a>
+      <nav class="nav-links" aria-label="Navegação principal">
+        <a href="#inicio">Início</a><a href="#sabores">Nossos sabores</a><a href="#sobre">Nossa história</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="nav-icon nav-account" type="button" id="accountBtn" aria-label="Minha conta">♙ <span id="accountLabel">Entrar</span></button>
+        <button class="cart-button" type="button" id="cartBtn" aria-label="Abrir carrinho"><span aria-hidden="true">♧</span> Carrinho <span class="cart-count" id="cartCount">0</span></button>
+      </div>
+    </div>
+  </header>
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="eyebrow"><span class="dot"></span> FEITO COM AMOR, DESDE A PRIMEIRA MORDIDA</div>
+          <h1>Pequenos doces.<br /><em>Grandes</em> momentos.</h1>
+          <p>Receitas artesanais, ingredientes especiais e muito carinho. Descubra o cupcake perfeito para deixar seu dia mais doce.</p>
+          <div class="hero-actions"><a class="button button-primary" href="#sabores">Explorar sabores <span>↗</span></a><a class="button button-link" href="#sobre">Conheça nossa história <span>↗</span></a></div>
+          <div class="hero-proof"><div class="avatar-stack" aria-hidden="true"><span>♡</span><span>✿</span><span>♥</span></div><div><strong>Feitos para encantar</strong><small>Uma dose diária de felicidade</small></div><span class="mini-stars" aria-label="cinco estrelas decorativas">★★★★★</span></div>
+        </div>
+        <div class="hero-art" aria-label="Ilustração de cupcakes artesanais">
+          <span class="art-star star-a">✦</span><span class="art-star star-b">✧</span><span class="art-star star-c">✦</span>
+          <div class="cupcake-illustration"><div class="cup-top"><div class="cherry"></div><div class="icing icing-back"></div><div class="icing icing-mid"></div><div class="icing icing-front"></div><span class="sprinkle sp1"></span><span class="sprinkle sp2"></span><span class="sprinkle sp3"></span></div><div class="cup-liner"><span></span><span></span><span></span><span></span><span></span></div><div class="cup-shadow"></div></div>
+          <div class="sticker"><span>100%</span><small>ARTESANAL</small></div>
+          <div class="art-caption">um pedacinho do céu <span>♡</span></div>
+        </div>
+      </div>
+      <div class="hero-bottom" aria-hidden="true"><span>FEITO À MÃO</span><b>✦</b><span>INGREDIENTES FRESCOS</span><b>✦</b><span>RECEITAS EXCLUSIVAS</span><b>✦</b><span>MUITO AMOR</span></div>
+    </section>
+    <section class="shop-section" id="sabores"><div class="container">
+      <div class="section-head"><div><span class="overline">NOSSA VITRINE DE DELÍCIAS</span><h2>Escolha seu próximo <em>favorito.</em></h2><p>Tem um sabor especial para cada momento.</p></div><span class="section-flower" aria-hidden="true">✳</span></div>
+      <div class="filters"><div class="chips" id="categories" aria-label="Filtrar categoria"><button class="chip active" data-category="" type="button">Todos os sabores</button><button class="chip" data-category="Clássicos" type="button">Clássicos</button><button class="chip" data-category="Especiais" type="button">Especiais</button><button class="chip" data-category="Frutados" type="button">Frutados</button></div><label class="search-box"><span aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="Buscar seu sabor..." aria-label="Buscar cupcakes" /></label></div>
+      <div class="product-grid" id="productGrid"><div class="loading-state">Preparando nossas delícias...</div></div>
+      <div class="shop-note"><span>✧</span> Produzidos em pequenos lotes, sempre fresquinhos. <span>✧</span></div>
+    </div></section>
+    <section class="story-section" id="sobre"><div class="container story-grid"><div class="story-art"><div class="story-badge">feito com <strong>amor ♡</strong></div><div class="story-flower one">✿</div><div class="story-flower two">✿</div><span class="story-symbol" aria-hidden="true">🧁</span></div><div class="story-copy"><span class="overline">NOSSA ESSÊNCIA</span><h2>Do nosso forno<br />para o <em>seu coração.</em></h2><p>Acreditamos que os melhores momentos merecem um doce especial. Por isso, cada cupcake é preparado com cuidado, criatividade e ingredientes escolhidos a dedo.</p><div class="story-highlights"><div><strong>01</strong><span>Preparo artesanal</span></div><div><strong>02</strong><span>Sabores especiais</span></div><div><strong>03</strong><span>Carinho em cada pedido</span></div></div><a class="button button-dark" href="#sabores">Escolher meus cupcakes ↗</a></div></div></section>
+    <section class="review-strip"><div class="container"><div><span class="review-quote">“</span><strong>Um pouquinho de felicidade em forma de cupcake.</strong></div><span>♡ FEITO ESPECIALMENTE PARA VOCÊ</span></div></section>
+  </main>
+  <footer class="footer"><div class="container footer-top"><div><a class="brand" href="#inicio"><span class="brand-icon">✿</span><span>Cupcake<span class="brand-accent">Gourmet</span><small>CONFEITARIA ARTESANAL</small></span></a><p>Pequenos gestos, grandes alegrias.</p></div><div><strong>Explore</strong><a href="#sabores">Nossos sabores</a><a href="#sobre">Nossa história</a><button id="feedbackBtn" type="button" class="footer-link">Avaliar o site</button></div><div><strong>Seu espaço</strong><button id="footerOrdersBtn" type="button" class="footer-link">Meus pedidos</button><button id="footerAccountBtn" type="button" class="footer-link">Minha conta</button></div><div><strong>Projeto acadêmico</strong><p>Aplicação demonstrativa para Projeto Integrador em Engenharia de Software II. Nenhum pagamento real é processado.</p></div></div><div class="container footer-bottom"><span>© 2026 Cupcake Gourmet · Projeto acadêmico</span><span>Feito com ♥ e tecnologia</span></div></footer>
+  <div class="toast-area" id="toasts" aria-live="polite"></div>
+  <div class="overlay" id="overlay" hidden><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="dialog-head"><h3 id="modalTitle">Minha conta</h3><button id="closeModal" type="button" class="close-button" aria-label="Fechar janela">×</button></div><div id="modalContent"></div></div></div>
+</body>
+</html>
