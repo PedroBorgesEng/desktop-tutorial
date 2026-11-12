@@ -1,0 +1,249 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R 8 0 R 10 0 R 12 0 R 14 0 R] /Count 6 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 2662 >>
+stream
+0.35 0.15 0.44 rg 0 813 595 29 re f
+1 1 1 rg BT /F1 12 Tf 1 0 0 1 49 825 Tm (PITE II  |  RELAT\323RIO T\311CNICO  |  SITUA\307\303O 2) Tj ET
+0.78 0.72 0.82 rg 48 805 499 1 re f
+0.28 0.11 0.36 rg BT /F1 21 Tf 1 0 0 1 49 774 Tm (DOCES ARTESANAIS \227 APLICA\307\303O WEB) Tj ET
+0.28 0.11 0.36 rg BT /F1 13 Tf 1 0 0 1 49 738 Tm (Documenta\347\343o da Situa\347\343o-Problema 2) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 717 Tm (Projeto Integrador Transdisciplinar em Engenharia de Software II. Implementa\347\343o) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 701 Tm (desenvolvida no Base44 com interface React/TanStack Start e fun\347\365es JavaScript no) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 685 Tm (servidor.) Tj ET
+0.28 0.11 0.36 rg BT /F1 13 Tf 1 0 0 1 49 658 Tm (Identifica\347\343o do projeto) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 637 Tm (- T\355tulo de entrega: Cupcake Gourmet \227 vers\343o publicada Doce Of\355cio.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 618 Tm (- Vers\343o: snapshot do sistema Base44 publicado em 11 de novembro de 2026.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 599 Tm (- Reposit\363rio: PedroBorgesEng/desktop-tutorial, pasta) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 65 584 Tm (projetos/pite-ii-cupcake-gourmet/base44-site.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 565 Tm (- Site: https://cupcake-gourmet-pite-ii-6e0cb87a.base44.app) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 546 Tm (- Origem dos requisitos acad\352micos: PITESoftwareII.pdf, p\341ginas 32 a 34 e 38.) Tj ET
+0.28 0.11 0.36 rg BT /F1 13 Tf 1 0 0 1 49 527 Tm (Objetivo) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 506 Tm (Demonstrar uma solu\347\343o full-stack para pedidos de produtos artesanais, contemplando) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 490 Tm (navega\347\343o de clientes, carrinho, solicita\347\343o de reserva, processamento de pre\347os no) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 474 Tm (servidor, persist\352ncia de pedidos e painel de gest\343o.) Tj ET
+0.28 0.11 0.36 rg BT /F1 13 Tf 1 0 0 1 49 447 Tm (Limites da demonstra\347\343o) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 426 Tm (Esta implementa\347\343o n\343o processa cobran\347as reais. O cliente registra um pedido para) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 410 Tm (pagamento combinado na retirada ou entrega. O backend e a autentica\347\343o utilizam os) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 394 Tm (servi\347os Base44.) Tj ET
+0.45 0.43 0.48 rg BT /F1 9 Tf 1 0 0 1 48 35 Tm (Projeto Integrador em Engenharia de Software II  |  1 / 6) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 3300 >>
+stream
+0.35 0.15 0.44 rg 0 813 595 29 re f
+1 1 1 rg BT /F1 12 Tf 1 0 0 1 49 825 Tm (PITE II  |  RELAT\323RIO T\311CNICO  |  SITUA\307\303O 2) Tj ET
+0.78 0.72 0.82 rg 48 805 499 1 re f
+0.28 0.11 0.36 rg BT /F1 21 Tf 1 0 0 1 49 774 Tm (1. REQUISITOS E ESCOPO) Tj ET
+0.28 0.11 0.36 rg BT /F1 13 Tf 1 0 0 1 49 738 Tm (Usu\341rios e jornadas) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 717 Tm (- Cliente: explora cat\341logo, filtra produtos, visualiza detalhes, monta carrinho e) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 65 702 Tm (confirma uma reserva com contato, data e retirada/entrega.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 683 Tm (- Administrador: autentica-se para gerir produtos, disponibilidade e acompanhar) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 65 668 Tm (estados dos pedidos.) Tj ET
+0.28 0.11 0.36 rg BT /F1 13 Tf 1 0 0 1 49 649 Tm (Requisitos funcionais implementados) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 628 Tm (- RF01 \227 Exibir cat\341logo de produtos dispon\355veis.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 609 Tm (- RF02 \227 Mostrar detalhes, descri\347\365es e imagens dos produtos.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 590 Tm (- RF03 \227 Incluir, alterar quantidades e remover itens do carrinho.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 571 Tm (- RF04 \227 Coletar nome, telefone e informa\347\365es para retirada/entrega.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 552 Tm (- RF05 \227 Validar o pedido no servidor e recalcular valores a partir do cat\341logo.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 533 Tm (- RF06 \227 Criar registro persistente de reserva e apresentar seu resultado.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 514 Tm (- RF07 \227 Permitir consulta ao estado de uma reserva.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 495 Tm (- RF08 \227 Administrar produtos, pre\347os, disponibilidade e pedidos.) Tj ET
+0.28 0.11 0.36 rg BT /F1 13 Tf 1 0 0 1 49 476 Tm (Requisitos n\343o funcionais) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 455 Tm (- RNF01 \227 Interface responsiva, organizada por rotas e componentes.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 436 Tm (- RNF02 \227 Tratamento de campos inv\341lidos e erros de requisi\347\343o.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 417 Tm (- RNF03 \227 Seguran\347a de escritas no cat\341logo e pedidos por permiss\365es.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 398 Tm (- RNF04 \227 Separa\347\343o entre apresenta\347\343o, dom\355nio e persist\352ncia.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 379 Tm (- RNF05 \227 C\363digo versionado e documenta\347\343o dispon\355vel em PDF.) Tj ET
+0.28 0.11 0.36 rg BT /F1 13 Tf 1 0 0 1 49 360 Tm (Premissas) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 339 Tm (Trata-se de aplica\347\343o acad\352mica. O fluxo de reserva n\343o constitui pedido faturado e n\343o) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 323 Tm (substitui controles fiscais, meios de pagamento, prote\347\343o de dados ou homologa\347\343o de) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 307 Tm (produ\347\343o.) Tj ET
+0.45 0.43 0.48 rg BT /F1 9 Tf 1 0 0 1 48 35 Tm (Projeto Integrador em Engenharia de Software II  |  2 / 6) Tj ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 3250 >>
+stream
+0.35 0.15 0.44 rg 0 813 595 29 re f
+1 1 1 rg BT /F1 12 Tf 1 0 0 1 49 825 Tm (PITE II  |  RELAT\323RIO T\311CNICO  |  SITUA\307\303O 2) Tj ET
+0.78 0.72 0.82 rg 48 805 499 1 re f
+0.28 0.11 0.36 rg BT /F1 21 Tf 1 0 0 1 49 774 Tm (2. ARQUITETURA DE SOFTWARE) Tj ET
+0.28 0.11 0.36 rg BT /F1 13 Tf 1 0 0 1 49 738 Tm (Vis\343o em camadas) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 717 Tm (- View: React com TanStack Start, componentes responsivos em src/components/site e) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 65 702 Tm (componentes administrativos.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 683 Tm (- Controller: rotas em src/routes, incluindo /api/catalogo e /api/pedidos, al\351m de) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 65 668 Tm (server functions.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 649 Tm (- Model: entidades Produto, Pedido e User da plataforma Base44 e valida\347\343o com Zod.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 630 Tm (- Service: src/lib/reservas.server.js concentra valida\347\365es e o processamento das) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 65 615 Tm (reservas.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 596 Tm (A arquitetura adota separa\347\343o de responsabilidades similar ao MVC recomendado na) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 580 Tm (disciplina. A interface nunca define pre\347os definitivos: os valores s\343o relidos no) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 564 Tm (servidor.) Tj ET
+0.28 0.11 0.36 rg BT /F1 13 Tf 1 0 0 1 49 537 Tm (Rotas principais) Tj ET
+0.23 0.22 0.27 rg BT /F1 9.4 Tf 1 0 0 1 58 516 Tm (GET  /                   \227 p\341gina inicial e cat\341logo) Tj ET
+0.23 0.22 0.27 rg BT /F1 9.4 Tf 1 0 0 1 58 498 Tm (GET  /produto/:id         \227 apresenta\347\343o detalhada) Tj ET
+0.23 0.22 0.27 rg BT /F1 9.4 Tf 1 0 0 1 58 480 Tm (GET  /carrinho            \227 montagem e revis\343o do carrinho) Tj ET
+0.23 0.22 0.27 rg BT /F1 9.4 Tf 1 0 0 1 58 462 Tm (GET  /pedido/:id          \227 consulta de reserva) Tj ET
+0.23 0.22 0.27 rg BT /F1 9.4 Tf 1 0 0 1 58 444 Tm (GET  /admin               \227 painel administrativo) Tj ET
+0.23 0.22 0.27 rg BT /F1 9.4 Tf 1 0 0 1 58 426 Tm (GET  /admin/produtos      \227 manuten\347\343o do cat\341logo) Tj ET
+0.23 0.22 0.27 rg BT /F1 9.4 Tf 1 0 0 1 58 408 Tm (GET  /admin/pedidos       \227 gest\343o de reservas) Tj ET
+0.23 0.22 0.27 rg BT /F1 9.4 Tf 1 0 0 1 58 390 Tm (GET  /api/catalogo        \227 dados p\372blicos do cat\341logo) Tj ET
+0.23 0.22 0.27 rg BT /F1 9.4 Tf 1 0 0 1 58 372 Tm (POST /api/pedidos         \227 cria\347\343o de reserva validada) Tj ET
+0.28 0.11 0.36 rg BT /F1 13 Tf 1 0 0 1 49 354 Tm (Organiza\347\343o de fontes) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 333 Tm (O site utiliza package.json, src/routes, src/components, src/lib e base44/entities. O) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 317 Tm (GitHub inclui uma c\363pia integral dos 137 arquivos-texto exportados do projeto, exceto) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 301 Tm (arquivos de instru\347\365es internos do ambiente.) Tj ET
+0.45 0.43 0.48 rg BT /F1 9 Tf 1 0 0 1 48 35 Tm (Projeto Integrador em Engenharia de Software II  |  3 / 6) Tj ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 3134 >>
+stream
+0.35 0.15 0.44 rg 0 813 595 29 re f
+1 1 1 rg BT /F1 12 Tf 1 0 0 1 49 825 Tm (PITE II  |  RELAT\323RIO T\311CNICO  |  SITUA\307\303O 2) Tj ET
+0.78 0.72 0.82 rg 48 805 499 1 re f
+0.28 0.11 0.36 rg BT /F1 21 Tf 1 0 0 1 49 774 Tm (3. MODELO DE DADOS E BACK-END) Tj ET
+0.28 0.11 0.36 rg BT /F1 13 Tf 1 0 0 1 49 738 Tm (Entidade Produto) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 717 Tm (A entidade armazena nome, categoria, pre\347o, resumo, descri\347\343o, ingredientes, por\347\343o,) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 701 Tm (imagem, disponibilidade e sinaliza\347\343o de destaque. As categorias do exemplo abrangem) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 685 Tm (bolos, tortas, doces e cookies.) Tj ET
+0.28 0.11 0.36 rg BT /F1 13 Tf 1 0 0 1 49 658 Tm (Entidade Pedido) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 637 Tm (A reserva cont\351m c\363digo, nome e contato do cliente, modalidade e endere\347o de entrega,) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 621 Tm (data desejada, per\355odo, observa\347\365es, itens, subtotal, taxa de entrega, total, estado e) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 605 Tm (forma de pagamento combinada.) Tj ET
+0.28 0.11 0.36 rg BT /F1 13 Tf 1 0 0 1 49 578 Tm (Entidade User) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 557 Tm (A plataforma mant\351m a identifica\347\343o dos usu\341rios e o papel \(admin ou user\). As) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 541 Tm (pol\355ticas de dados restringem opera\347\365es de escrita e leitura conforme o papel, com) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 525 Tm (cria\347\343o de reservas feita por opera\347\343o de servidor.) Tj ET
+0.28 0.11 0.36 rg BT /F1 13 Tf 1 0 0 1 49 498 Tm (Fluxo de uma reserva) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 477 Tm (- 1. O usu\341rio escolhe produtos e quantidades no carrinho.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 458 Tm (- 2. A interface envia dados do pedido para POST /api/pedidos.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 439 Tm (- 3. O servidor valida campos com Zod e rejeita solicita\347\365es inv\341lidas.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 420 Tm (- 4. O servidor consulta os produtos dispon\355veis e recalcula valores.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 401 Tm (- 5. O processamento grava um pedido e retorna resposta ao cliente.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 382 Tm (- 6. O administrador acompanha o pedido em seu painel.) Tj ET
+0.28 0.11 0.36 rg BT /F1 13 Tf 1 0 0 1 49 363 Tm (Tratamento de erros) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 342 Tm (Exemplos observ\341veis no c\363digo: rejei\347\343o de JSON malformado, valida\347\343o de) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 326 Tm (nome/telefone, limita\347\365es de quantidade, restri\347\365es de tipo de entrega e verifica\347\343o de) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 310 Tm (permiss\343o administrativa.) Tj ET
+0.45 0.43 0.48 rg BT /F1 9 Tf 1 0 0 1 48 35 Tm (Projeto Integrador em Engenharia de Software II  |  4 / 6) Tj ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 13 0 R >>
+endobj
+13 0 obj
+<< /Length 3227 >>
+stream
+0.35 0.15 0.44 rg 0 813 595 29 re f
+1 1 1 rg BT /F1 12 Tf 1 0 0 1 49 825 Tm (PITE II  |  RELAT\323RIO T\311CNICO  |  SITUA\307\303O 2) Tj ET
+0.78 0.72 0.82 rg 48 805 499 1 re f
+0.28 0.11 0.36 rg BT /F1 21 Tf 1 0 0 1 49 774 Tm (4. FRONT-END E TESTES) Tj ET
+0.28 0.11 0.36 rg BT /F1 13 Tf 1 0 0 1 49 738 Tm (Interface do usu\341rio) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 717 Tm (O front-end apresenta capa da loja, se\347\365es de cat\341logo e ateli\352, filtro por produtos,) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 701 Tm (cart\365es de produtos, carrinho e telas de acompanhamento de reservas. Componentes) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 685 Tm (reutiliz\341veis permitem manter apar\352ncia e comportamentos consistentes.) Tj ET
+0.28 0.11 0.36 rg BT /F1 13 Tf 1 0 0 1 49 658 Tm (Interface administrativa) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 637 Tm (O painel organiza indicadores, cadastro e edi\347\343o de produtos, controle de) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 621 Tm (disponibilidade e acompanhamento de reservas. Seu acesso depende de autentica\347\343o e) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 605 Tm (privil\351gios.) Tj ET
+0.28 0.11 0.36 rg BT /F1 13 Tf 1 0 0 1 49 578 Tm (Verifica\347\343o de software) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 557 Tm (- Build da vers\343o Base44: o construtor registrou compila\347\343o ap\363s corrigir uma) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 65 542 Tm (importa\347\343o ausente em src/routes/_authed/admin/produtos.jsx.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 523 Tm (- Testes de back-end: o hist\363rico do Base44 registrou execu\347\365es bem-sucedidas de) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 65 508 Tm (fun\347\365es de teste do construtor.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 489 Tm (- Testes automatizados da implementa\347\343o Python alternativa: 14 testes de API e 5) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 65 474 Tm (testes de JavaScript aprovados, relatados separadamente.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 455 Tm (- Limita\347\343o: n\343o h\341 evid\352ncia de execu\347\343o completa de testes E2E no navegador para a) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 65 440 Tm (vers\343o Base44 no momento deste snapshot.) Tj ET
+0.28 0.11 0.36 rg BT /F1 13 Tf 1 0 0 1 49 421 Tm (Crit\351rios de aceita\347\343o recomendados) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 400 Tm (- O cat\341logo deve apresentar produtos dispon\355veis sem erro de renderiza\347\343o.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 381 Tm (- O carrinho deve atualizar quantidades e valores exibidos.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 362 Tm (- O servidor deve rejeitar requisi\347\343o inv\341lida com mensagem controlada.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 343 Tm (- Um pedido v\341lido deve ser persistido e localizado no painel.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 324 Tm (- A edi\347\343o de produtos deve ficar restrita ao administrador.) Tj ET
+0.45 0.43 0.48 rg BT /F1 9 Tf 1 0 0 1 48 35 Tm (Projeto Integrador em Engenharia de Software II  |  5 / 6) Tj ET
+endstream
+endobj
+14 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 15 0 R >>
+endobj
+15 0 obj
+<< /Length 3407 >>
+stream
+0.35 0.15 0.44 rg 0 813 595 29 re f
+1 1 1 rg BT /F1 12 Tf 1 0 0 1 49 825 Tm (PITE II  |  RELAT\323RIO T\311CNICO  |  SITUA\307\303O 2) Tj ET
+0.78 0.72 0.82 rg 48 805 499 1 re f
+0.28 0.11 0.36 rg BT /F1 21 Tf 1 0 0 1 49 774 Tm (5. PUBLICA\307\303O E UTILIZA\307\303O) Tj ET
+0.28 0.11 0.36 rg BT /F1 13 Tf 1 0 0 1 49 738 Tm (Acessar a vers\343o publicada) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 717 Tm (A loja \351 acess\355vel em https://cupcake-gourmet-pite-ii-6e0cb87a.base44.app. A aplica\347\343o) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 701 Tm (publica a interface e os servi\347os em infraestrutura gerenciada Base44.) Tj ET
+0.28 0.11 0.36 rg BT /F1 13 Tf 1 0 0 1 49 674 Tm (Reproduzir o c\363digo) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 653 Tm (- 1. Baixar ou clonar o reposit\363rio PedroBorgesEng/desktop-tutorial.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 634 Tm (- 2. Entrar em projetos/pite-ii-cupcake-gourmet/base44-site.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 615 Tm (- 3. Ler o README e conferir as depend\352ncias do package.json.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 596 Tm (- 4. Conectar conta/projeto Base44 compat\355vel para entidades, autentica\347\343o e dados.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 54 577 Tm (- 5. Instalar depend\352ncias e executar o comando de desenvolvimento informado pelo) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 65 562 Tm (projeto.) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 543 Tm (Sem configura\347\343o Base44 compat\355vel, a interface local n\343o reproduz automaticamente o) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 527 Tm (banco de dados ou as integra\347\365es de autentica\347\343o da aplica\347\343o publicada.) Tj ET
+0.28 0.11 0.36 rg BT /F1 13 Tf 1 0 0 1 49 500 Tm (Rela\347\343o com a implementa\347\343o Python) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 479 Tm (A pasta projetos/pite-ii-cupcake-gourmet/app pertence a uma implementa\347\343o alternativa) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 463 Tm (baseada em FastAPI, SQLite e testes automatizados. Ela \351 independente do c\363digo do site) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 447 Tm (Base44, mantido em base44-site.) Tj ET
+0.28 0.11 0.36 rg BT /F1 13 Tf 1 0 0 1 49 420 Tm (Controle de vers\343o) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 399 Tm (A exporta\347\343o dos arquivos Base44 foi realizada manualmente. Por restri\347\343o do plano) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 383 Tm (atual, a plataforma n\343o tem sincroniza\347\343o autom\341tica com o reposit\363rio GitHub. Novas) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 367 Tm (altera\347\365es no editor devem ser exportadas novamente.) Tj ET
+0.28 0.11 0.36 rg BT /F1 13 Tf 1 0 0 1 49 340 Tm (Conclus\343o) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 319 Tm (A Situa\347\343o-Problema 2 apresenta uma aplica\347\343o full-stack com interface funcional,) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 303 Tm (servidor, entidades persistentes e tratamento b\341sico de erros, acompanhada de) Tj ET
+0.16 0.15 0.22 rg BT /F1 10.5 Tf 1 0 0 1 49 287 Tm (documenta\347\343o e registros expl\355citos de valida\347\343o e de limita\347\365es.) Tj ET
+0.45 0.43 0.48 rg BT /F1 9 Tf 1 0 0 1 48 35 Tm (Projeto Integrador em Engenharia de Software II  |  6 / 6) Tj ET
+endstream
+endobj
+xref
+0 16
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000148 00000 n 
+0000000245 00000 n 
+0000000371 00000 n 
+0000003084 00000 n 
+0000003210 00000 n 
+0000006561 00000 n 
+0000006687 00000 n 
+0000009988 00000 n 
+0000010116 00000 n 
+0000013302 00000 n 
+0000013430 00000 n 
+0000016709 00000 n 
+0000016837 00000 n 
+trailer
+<< /Size 16 /Root 1 0 R >>
+startxref
+20296
+%%EOF
