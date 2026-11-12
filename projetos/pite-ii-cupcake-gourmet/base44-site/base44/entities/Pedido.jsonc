@@ -1,0 +1,161 @@
+{
+  "name": "Pedido",
+  "type": "object",
+  "description": "Reserva de doces feita pelo cliente no site. O pagamento \u00e9 combinado na retirada ou entrega.",
+  "properties": {
+    "codigo": {
+      "type": "string",
+      "description": "C\u00f3digo p\u00fablico de consulta do pedido (ex: DO-4F2A9C)"
+    },
+    "nome_cliente": {
+      "type": "string",
+      "description": "Nome de quem fez a reserva"
+    },
+    "telefone": {
+      "type": "string",
+      "description": "Telefone com DDD para confirma\u00e7\u00e3o"
+    },
+    "email": {
+      "type": "string",
+      "description": "E-mail opcional do cliente"
+    },
+    "tipo_entrega": {
+      "type": "string",
+      "enum": [
+        "retirada",
+        "entrega"
+      ],
+      "enumColors": [
+        "green",
+        "blue"
+      ],
+      "description": "Retirada no ateli\u00ea ou entrega no endere\u00e7o informado"
+    },
+    "endereco": {
+      "type": "string",
+      "description": "Endere\u00e7o completo quando o tipo for entrega"
+    },
+    "data_desejada": {
+      "type": "string",
+      "format": "date",
+      "description": "Data desejada para retirada ou entrega (AAAA-MM-DD)"
+    },
+    "periodo": {
+      "type": "string",
+      "enum": [
+        "manha",
+        "tarde"
+      ],
+      "enumColors": [
+        "yellow",
+        "purple"
+      ],
+      "description": "Per\u00edodo preferido"
+    },
+    "observacoes": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es do cliente"
+    },
+    "itens": {
+      "type": "array",
+      "description": "Itens reservados, com pre\u00e7o congelado no momento do pedido",
+      "items": {
+        "type": "object",
+        "properties": {
+          "produto_id": {
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "preco_unitario": {
+            "type": "number"
+          },
+          "quantidade": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "subtotal": {
+      "type": "number",
+      "description": "Soma dos itens, calculada no servidor"
+    },
+    "taxa_entrega": {
+      "type": "number",
+      "description": "Taxa fixa de entrega (0 na retirada)"
+    },
+    "total": {
+      "type": "number",
+      "description": "Total a pagar na retirada/entrega"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "novo",
+        "confirmado",
+        "pronto",
+        "entregue",
+        "cancelado"
+      ],
+      "enumColors": [
+        "yellow",
+        "blue",
+        "purple",
+        "green",
+        "red"
+      ],
+      "default": "novo",
+      "description": "Etapa do pedido no painel do ateli\u00ea"
+    },
+    "pagamento": {
+      "type": "string",
+      "enum": [
+        "a_combinar",
+        "pix",
+        "dinheiro",
+        "debito",
+        "credito"
+      ],
+      "enumColors": [
+        "gray",
+        "green",
+        "yellow",
+        "blue",
+        "purple"
+      ],
+      "default": "a_combinar",
+      "description": "Forma de pagamento acertada na entrega"
+    }
+  },
+  "required": [
+    "nome_cliente",
+    "telefone",
+    "tipo_entrega",
+    "data_desejada",
+    "itens",
+    "total"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

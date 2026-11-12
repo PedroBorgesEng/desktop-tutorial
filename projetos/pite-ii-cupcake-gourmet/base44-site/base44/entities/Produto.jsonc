@@ -1,0 +1,84 @@
+{
+  "name": "Produto",
+  "type": "object",
+  "description": "Item do cat\u00e1logo artesanal (bolos, tortas, doces e cookies).",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "description": "Nome comercial do doce"
+    },
+    "categoria": {
+      "type": "string",
+      "enum": [
+        "bolos",
+        "tortas",
+        "doces",
+        "cookies"
+      ],
+      "enumColors": [
+        "purple",
+        "blue",
+        "pink",
+        "yellow"
+      ],
+      "description": "Categoria usada nos filtros do cat\u00e1logo"
+    },
+    "preco": {
+      "type": "number",
+      "description": "Pre\u00e7o unit\u00e1rio em reais"
+    },
+    "resumo": {
+      "type": "string",
+      "description": "Frase curta exibida no card do cat\u00e1logo"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o completa na p\u00e1gina do produto"
+    },
+    "ingredientes": {
+      "type": "string",
+      "description": "Lista de ingredientes"
+    },
+    "porcao": {
+      "type": "string",
+      "description": "Rendimento ou tamanho (ex: 8 fatias, 9 unidades)"
+    },
+    "imagem_url": {
+      "type": "string",
+      "description": "URL da foto do produto"
+    },
+    "disponivel": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se aparece no cat\u00e1logo p\u00fablico"
+    },
+    "destaque": {
+      "type": "boolean",
+      "default": false,
+      "description": "Marca o item como destaque do lote"
+    }
+  },
+  "required": [
+    "nome",
+    "categoria",
+    "preco"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
