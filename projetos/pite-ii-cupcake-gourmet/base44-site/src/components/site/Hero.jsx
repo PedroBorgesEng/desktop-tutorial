@@ -18,7 +18,7 @@ export default function Hero() {
 
       <div className="mx-auto grid max-w-[1400px] items-center gap-12 px-6 py-14 lg:grid-cols-2 lg:gap-8 lg:px-10 lg:py-24">
         <div className="relative z-10 max-w-xl">
-          <p className="eyebrow">Ateliê de doces artesanais · São Paulo</p>
+          <p className="eyebrow">Ateliê de doces artesanais · catálogo ilustrativo</p>
 
           <h1 className="mt-6 font-heading text-[2.75rem] font-light leading-[0.98] tracking-tight sm:text-6xl lg:text-[4.25rem]">
             Doces feitos à mão,

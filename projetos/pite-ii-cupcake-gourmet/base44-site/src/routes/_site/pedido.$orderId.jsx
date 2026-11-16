@@ -3,12 +3,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { CheckCircle2, Clock } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { formatBRL, formatarData } from "@/lib/format";
-import { PAGAMENTOS, classeStatus, rotuloStatus } from "@/lib/pedido-constantes";
+import { classeStatus, rotuloStatus } from "@/lib/pedido-constantes";
 import { consultarPedido } from "@/lib/server-fns";
 
 export const Route = createFileRoute("/_site/pedido/$orderId")({
   validateSearch: (search) => ({
     session_id: typeof search.session_id === "string" ? search.session_id : undefined,
+    retorno: typeof search.retorno === "string" ? search.retorno : undefined,
   }),
   head: () => ({
     meta: [{ title: "Pedido · Doce Ofício" }],
@@ -18,7 +19,7 @@ export const Route = createFileRoute("/_site/pedido/$orderId")({
 
 function PedidoPage() {
   const { orderId } = Route.useParams();
-  const { session_id } = Route.useSearch();
+  const { session_id, retorno } = Route.useSearch();
   const buscarPedido = useServerFn(consultarPedido);
   const [pedido, setPedido] = useState(null);
   const [carregado, setCarregado] = useState(false);
@@ -95,7 +96,7 @@ function PedidoPage() {
       <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">
         {pago ? (
           <>
-            Pagamento aprovado e encomenda garantida para{" "}
+            Pagamento confirmado pelo provedor e encomenda prevista para{" "}
             <strong className="text-foreground">{formatarData(pedido.data_desejada)}</strong>.
             Guarde o código <strong className="text-foreground">{pedido.codigo}</strong>.
           </>
@@ -107,6 +108,17 @@ function PedidoPage() {
           </>
         )}
       </p>
+
+      {retorno === "falha" && !pago && (
+        <p className="mt-6 border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+          O checkout foi interrompido ou recusado. Nenhuma confirmação de pagamento foi recebida.
+        </p>
+      )}
+      {retorno === "pendente" && !pago && (
+        <p className="mt-6 border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+          Pagamento Pix pendente. Aguarde a confirmação automática do Mercado Pago.
+        </p>
+      )}
 
       <div className="mt-10 border border-border bg-card">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-6 py-4">
@@ -179,11 +191,13 @@ function PedidoPage() {
           <div>
             <dt className="eyebrow">Pagamento</dt>
             <dd className="mt-1">
-              {pedido.pagamento === "online"
-                ? pago
-                  ? "Pago online com cartão"
-                  : "Online — aguardando confirmação"
-                : `${PAGAMENTOS.find((p) => p.value === pedido.pagamento)?.label || "A combinar"} — acertado na retirada ou entrega`}
+              {pago
+                ? pedido.pagamento === "pix"
+                  ? "Pagamento por Pix confirmado"
+                  : pedido.pagamento === "credito" || pedido.pagamento === "debito"
+                    ? "Pagamento com cartão confirmado"
+                    : "Pagamento online confirmado"
+                : "Pix ou cartão — aguardando confirmação do Mercado Pago"}
             </dd>
           </div>
         </dl>
@@ -197,12 +211,9 @@ function PedidoPage() {
         >
           Voltar ao catálogo
         </Link>
-        <a
-          href="mailto:atelie@doceoficio.com.br"
-          className="inline-flex items-center justify-center px-2 py-4 text-[11px] uppercase tracking-[0.18em] text-muted-foreground underline-offset-4 hover:text-accent hover:underline"
-        >
-          Falar com o ateliê
-        </a>
+        <p className="px-2 py-4 text-xs text-muted-foreground">
+          Para dúvidas sobre a encomenda, utilize o canal de atendimento informado pelo estabelecimento.
+        </p>
       </div>
     </div>
   );

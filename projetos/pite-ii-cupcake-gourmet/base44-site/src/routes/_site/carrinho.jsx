@@ -35,6 +35,16 @@ function CarrinhoPage() {
   const [erro, setErro] = useState("");
   const [dataMinima, setDataMinima] = useState("");
   const [prazoDias, setPrazoDias] = useState(2);
+  const [pagamentos, setPagamentos] = useState(null);
+
+  useEffect(() => {
+    let ativo = true;
+    fetch("/api/checkout")
+      .then((r) => r.json())
+      .then((dados) => { if (ativo) setPagamentos(dados); })
+      .catch(() => { if (ativo) setPagamentos({ habilitado: false, modo: "pendente" }); });
+    return () => { ativo = false; };
+  }, []);
 
   useEffect(() => {
     const prazo = itens.reduce((maior, item) => Math.max(maior, item.prazo_dias ?? 2), 2);
@@ -62,8 +72,12 @@ function CarrinhoPage() {
       setErro("Sua reserva está vazia.");
       return;
     }
+    if (!pagamentos?.habilitado) {
+      setErro("Pix e cartão ainda não estão disponíveis. Aguarde a configuração da loja.");
+      return;
+    }
 
-    // O checkout do Stripe precisa abrir como página inteira: em preview (iframe)
+    // Checkout hospedado pelo Mercado Pago deve abrir como página inteira: em preview (iframe)
     // a aba é aberta no próprio clique, antes de qualquer espera.
     const enquadrado = window.self !== window.top;
     const aba = enquadrado ? window.open("", "_blank") : null;
@@ -127,8 +141,8 @@ function CarrinhoPage() {
         Sua reserva
       </h1>
       <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
-        Checkout com cartão em modo de teste. Nenhum valor real é cobrado e a encomenda
-        não deve ser produzida até a ativação comercial da loja.
+        Escolha Pix ou cartão no ambiente de pagamento do Mercado Pago.
+        {pagamentos?.modo !== "producao" && " Esta loja permanece em homologação, sem cobrança real."}
       </p>
 
       <div className="mt-10 grid gap-12 lg:grid-cols-[1.25fr_1fr] lg:gap-16">
@@ -365,16 +379,21 @@ function CarrinhoPage() {
 
           <button
             type="submit"
-            disabled={enviando}
+            disabled={enviando || !pagamentos?.habilitado}
             className="mt-6 inline-flex w-full items-center justify-center gap-2 bg-primary px-7 py-4 text-[11px] font-medium uppercase tracking-[0.18em] text-primary-foreground transition-colors hover:bg-accent disabled:opacity-60"
           >
             {enviando && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
-            {enviando ? "Abrindo pagamento..." : "Ir para o pagamento"}
+            {enviando ? "Abrindo pagamento..." : pagamentos?.habilitado ? "Pagar com Pix ou cartão" : "Pagamento aguardando ativação"}
           </button>
 
           <p className="mt-3 text-center text-xs text-muted-foreground">
-            Pagamento seguro com cartão · processado pela Stripe
+            Pix ou cartão · checkout Mercado Pago {pagamentos?.modo === "teste" ? "(ambiente de testes)" : ""}
           </p>
+          {!pagamentos?.habilitado && (
+            <p role="status" className="mt-2 text-center text-xs text-amber-800">
+              O estabelecimento ainda não ativou sua conta Mercado Pago. Não há cobranças nem criação de novos pedidos.
+            </p>
+          )}
         </form>
       </div>
     </div>

@@ -37,6 +37,11 @@ export const Route = createFileRoute("/api/stripe-webhook")({
         const base44 = context.getBase44().asServiceRole;
         try {
           const pedido = await base44.entities.Pedido.get(pedidoId);
+          // Webhook legado jamais deve aprovar pedido criado pelo Mercado Pago.
+          if (pedido.pagamento_gateway === "mercadopago" ||
+              !pedido.stripe_session_id || pedido.stripe_session_id !== sessao.id) {
+            return Response.json({ recebido: true });
+          }
           const esperado = Math.round(Number(pedido.total) * 100);
           if (Number(sessao.amount_total) !== esperado || (sessao.currency || "").toLowerCase() !== "brl") {
             console.error("stripe-webhook: valor divergente", pedidoId, sessao.amount_total, esperado);

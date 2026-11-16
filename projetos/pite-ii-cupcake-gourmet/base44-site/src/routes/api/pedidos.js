@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 /**
  * Rota antiga de reservas: desativada para impedir a criação de pedidos sem checkout.
- * O cliente deve utilizar POST /api/checkout (pagamento processado pelo Stripe).
+ * O cliente deve utilizar POST /api/checkout (Pix ou cartão pelo Mercado Pago).
  */
 export const Route = createFileRoute("/api/pedidos")({
   server: {

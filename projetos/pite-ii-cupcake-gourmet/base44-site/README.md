@@ -1,39 +1,33 @@
-# Doce Ofício — versão de loja virtual em homologação
+# Doce Ofício — versão Base44 (Pix e cartão)
 
-**Projeto:** Cupcake Gourmet · PITE Engenharia de Software II  
-**Data da sincronização:** 16/11/2026
+**Versão publicada em 16/11/2026:** https://cupcake-gourmet-pite-ii-6e0cb87a.base44.app
 
-- **Site publicado:** https://cupcake-gourmet-pite-ii-6e0cb87a.base44.app
-- **Editor Base44:** https://app.base44.com/apps/6af46ee5dcb326846e0cb87a/editor/preview
-- **Código do site:** esta pasta (`base44-site/`)
-- **Implementação independente:** pasta irmã `../app/` (Python/FastAPI), mantida sem alterações.
-- **Documentação PDF acadêmica:** `../docs/Documentacao_Versao_Base44_Situacao_2.pdf` (anterior à evolução comercial).
+## Estado atual
 
-## Capacidades implementadas
+- Integração **Mercado Pago Checkout Pro** preparada para Pix e cartão;
+- Cobranças e criação de novos pedidos bloqueadas enquanto não houver conta Mercado Pago configurada;
+- Checkout hospedado no Mercado Pago, sem captura de dados de cartão pelo site;
+- Processamento de valores e validação de pedidos no servidor;
+- Webhook autenticado que consulta o pagamento diretamente no provedor;
+- Catálogo, carrinho, estoque e prazo mínimo para encomendas;
+- Alertas de homologação e remoção de contatos/endereço de demonstração;
+- Integração Stripe anterior mantida apenas como legado para pedidos anteriores de teste.
 
-Catálogo de doces, páginas de produtos, carrinho, retirada ou entrega, pedidos com processamento de preços no servidor, painel administrativo, estoque opcional por produto e prazo mínimo de produção. O checkout usa Stripe e o webhook verifica a assinatura e confere o valor.
+## Ambiente
 
-## Atenção: pagamentos exclusivamente em teste
+Front-end em React/TanStack Start e backend JavaScript com Base44 (entidades Produto, Pedido e User). Código-fonte nos diretórios `src/` e `base44/`.
 
-A conexão Stripe está em modo **sandbox**, não há conta live validada e **não existe cobrança real**. O site mostra aviso de homologação. As fotos, descrições, preços, taxas, políticas e dados do estabelecimento precisam ser conferidos pelo proprietário antes de vender. A implementação não deve ser apresentada ao público como loja habilitada para vendas reais.
+A integração Mercado Pago exige credenciais de sua conta configuradas como **segredos privados** do Base44: `MERCADOPAGO_ACCESS_TOKEN`, `MERCADOPAGO_WEBHOOK_SECRET` e, apenas depois de completa homologação, `MERCADOPAGO_LIVE_ENABLED=true`.
 
-## Arquitetura
+**Nenhum token ou dado de cliente foi incluído neste repositório.** As alterações no Base44 precisam ser sincronizadas manualmente com o GitHub.
 
-- React 19 + TanStack Start, rotas em `src/routes/`
-- Funções de servidor JavaScript, Zod e API HTTP (`/api/checkout`, `/api/catalogo`, `/api/stripe-webhook`)
-- Entidades Base44: `Produto`, `Pedido`, `User`
-- Back-end persistente, autenticação e restrições administrativas gerenciadas pela Base44
-- Chaves de pagamentos via segredos do servidor, **não** armazenadas no GitHub
+## Documentação
 
-## Como desenvolver
+- [Preparação para vendas](./docs/PREPARACAO_PARA_VENDAS.md).
+- [Plano de implantação Pix e cartão](../docs/INTEGRACAO_PIX_CARTAO_2026-11-16.md).
+- [Código da implementação alternativa em Python](../README.md).
+- [Relatório acadêmico em PDF](../docs/Documentacao_Versao_Base44_Situacao_2.pdf) — descreve versão anterior e não substitui os testes comerciais.
 
-O projeto não depende apenas de executar JavaScript local: é preciso conectar um projeto Base44 com entidades e credenciais configuradas. Use o editor Base44 ou CLI correspondente; `package.json` oferece os comandos `npm run dev`, `npm run build` e `npm run lint`.
+## Limitações para produção
 
-## Homologação e pendências
-
-- Código compilado no Base44 e pré-visualização disponível; o construtor testou funções Stripe em sandbox.
-- Um teste de navegação automatizado foi cadastrado, mas **não executado** por limite mensal da conta Base44.
-- Ainda é necessária validação independente em navegador, revisão de concorrência/expiração de reservas de estoque, teste de reembolsos, consentimento e informações comerciais, além de configurar provedores live.
-- A sincronização GitHub ↔ Base44 é **manual** neste plano, logo futuras mudanças devem ser exportadas novamente.
-
-Para mais detalhes, veja `docs/PREPARACAO_PARA_VENDAS.md` e `../docs/EVOLUCAO_COMERCIAL_2026-11-16.md`.
+Ainda não foram homologados pagamentos reais, confirmação/expiração de Pix, reembolsos, concorrência de estoque e recuperação de carrinhos abandonados. A operação depende de fotos e preços reais, dados do estabelecimento, políticas comerciais e validação jurídica/fiscal.

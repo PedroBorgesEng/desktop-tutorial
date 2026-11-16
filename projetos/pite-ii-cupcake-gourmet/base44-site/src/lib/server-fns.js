@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { criarPedido, esquemaReserva } from "@/lib/reservas.server";
+import { esquemaReserva } from "@/lib/reservas.server";
 
 export const getServerInfo = createServerFn({ method: "GET" }).handler(async () => ({
   renderedAt: new Date().toISOString(),
@@ -34,9 +34,8 @@ export const buscarProduto = createServerFn({ method: "GET" })
  */
 export const criarReserva = createServerFn({ method: "POST" })
   .validator(esquemaReserva)
-  .handler(async ({ data, context }) => {
-    const pedido = await criarPedido(context.getBase44().asServiceRole, data);
-    return { pedido };
+  .handler(async () => {
+    throw new Error("Rota antiga desativada: finalize a compra pelo checkout.");
   });
 
 /**
@@ -49,7 +48,10 @@ export const consultarPedido = createServerFn({ method: "POST" })
     const base44 = context.getBase44().asServiceRole;
     try {
       const pedido = await base44.entities.Pedido.get(data.id);
-      if (!pedido || !pedido.stripe_session_id || pedido.stripe_session_id !== data.sessao) {
+      if (!pedido || !(
+        (pedido.mercadopago_preference_id && pedido.consulta_token === data.sessao) ||
+        (pedido.stripe_session_id && pedido.stripe_session_id === data.sessao)
+      )) {
         return { pedido: null };
       }
       return {

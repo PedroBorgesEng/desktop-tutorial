@@ -1,8 +1,8 @@
 export const TAXA_ENTREGA = 12;
 
 export const TIPOS_ENTREGA = [
-  { value: "retirada", label: "Retirada no ateliê", ajuda: "Sem taxa · Vila Madalena" },
-  { value: "entrega", label: "Entrega em São Paulo", ajuda: "Taxa fixa de R$ 12,00" },
+  { value: "retirada", label: "Retirada no ateliê", ajuda: "Sem taxa · endereço a confirmar" },
+  { value: "entrega", label: "Entrega sob disponibilidade", ajuda: "Taxa demonstrativa; confirme a região atendida" },
 ];
 
 export const PERIODOS = [

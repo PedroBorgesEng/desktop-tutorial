@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Menu, X, ShoppingBag } from "lucide-react";
 import { useCart } from "@/lib/cart";
@@ -11,12 +11,25 @@ const NAV = [
 
 export default function SiteHeader() {
   const [aberto, setAberto] = useState(false);
+  const [modoPagamento, setModoPagamento] = useState("pendente");
+
+  useEffect(() => {
+    let ativo = true;
+    fetch("/api/checkout").then(r => r.json())
+      .then(d => { if (ativo) setModoPagamento(d.modo || "pendente"); })
+      .catch(() => { if (ativo) setModoPagamento("pendente"); });
+    return () => { ativo = false; };
+  }, []);
   const { quantidadeTotal } = useCart();
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/80 bg-background/90 backdrop-blur">
       <p role="status" className="bg-amber-100 px-4 py-2 text-center text-xs font-semibold text-amber-950">
-        Loja em homologação — pagamentos em modo de teste. Nenhum valor real é cobrado.
+        {modoPagamento === "producao"
+          ? "Pix e cartão disponíveis — confira os detalhes antes de concluir sua compra."
+          : modoPagamento === "teste"
+            ? "Loja em homologação — pagamentos em modo de teste. Nenhum valor real é cobrado."
+            : "Pix e cartão em configuração — novos pedidos estão desativados."}
       </p>
       <div className="mx-auto flex h-20 max-w-[1400px] items-center justify-between gap-6 px-6 lg:px-10">
         <Link to="/" className="group flex items-baseline gap-3">
@@ -45,7 +58,7 @@ export default function SiteHeader() {
             className="relative inline-flex items-center gap-2 border border-border px-4 py-2.5 text-xs uppercase tracking-[0.16em] transition-colors hover:border-foreground/40 hover:text-accent"
           >
             <ShoppingBag className="h-4 w-4" aria-hidden="true" />
-            <span className="hidden sm:inline">Reserva</span>
+            <span className="hidden sm:inline">Carrinho</span>
             {quantidadeTotal > 0 && (
               <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-medium text-primary-foreground">
                 {quantidadeTotal}
