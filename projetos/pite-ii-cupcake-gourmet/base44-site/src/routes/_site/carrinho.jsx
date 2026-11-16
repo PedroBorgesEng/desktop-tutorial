@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Loader2, Minus, Plus, Trash2 } from "lucide-react";
 import { Image } from "@/components/ui/image";
 import { useCart } from "@/lib/cart";
 import { formatBRL } from "@/lib/format";
-import { criarReserva } from "@/lib/server-fns";
 import { PERIODOS, TAXA_ENTREGA, TIPOS_ENTREGA } from "@/lib/pedido-constantes";
 
 export const Route = createFileRoute("/_site/carrinho")({
@@ -31,21 +29,24 @@ const campo =
 
 function CarrinhoPage() {
   const { itens, alterarQuantidade, remover, limpar, total } = useCart();
-  const criar = useServerFn(criarReserva);
-  const navigate = useNavigate();
 
   const [form, setForm] = useState(FORM_INICIAL);
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState("");
+  const [dataMinima, setDataMinima] = useState("");
+  const [prazoDias, setPrazoDias] = useState(2);
 
   useEffect(() => {
-    const daqui2dias = new Date();
-    daqui2dias.setDate(daqui2dias.getDate() + 2);
-    setForm((atual) => ({
-      ...atual,
-      data_desejada: daqui2dias.toISOString().slice(0, 10),
-    }));
-  }, []);
+    const prazo = itens.reduce((maior, item) => Math.max(maior, item.prazo_dias ?? 2), 2);
+    const data = new Date();
+    data.setDate(data.getDate() + prazo);
+    const iso = data.toISOString().slice(0, 10);
+    setPrazoDias(prazo);
+    setDataMinima(iso);
+    setForm((atual) =>
+      !atual.data_desejada || atual.data_desejada < iso ? { ...atual, data_desejada: iso } : atual
+    );
+  }, [itens]);
 
   const taxa = form.tipo_entrega === "entrega" ? TAXA_ENTREGA : 0;
   const totalFinal = total + taxa;
@@ -62,27 +63,38 @@ function CarrinhoPage() {
       return;
     }
 
+    // O checkout do Stripe precisa abrir como página inteira: em preview (iframe)
+    // a aba é aberta no próprio clique, antes de qualquer espera.
+    const enquadrado = window.self !== window.top;
+    const aba = enquadrado ? window.open("", "_blank") : null;
+    if (enquadrado && !aba) {
+      setErro("Permita pop-ups neste navegador para concluir o pagamento.");
+      return;
+    }
+    if (aba) aba.opener = null;
+
     setEnviando(true);
     try {
-      const resposta = await criar({
-        data: {
+      const resposta = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           ...form,
           itens: itens.map((item) => ({ produto_id: item.id, quantidade: item.quantidade })),
-        },
+        }),
       });
+      const dados = await resposta.json();
+      if (!resposta.ok) throw new Error(dados?.erro || "Não foi possível iniciar o pagamento.");
 
-      const pedido = resposta.pedido;
-      window.localStorage.setItem(`doce-oficio:pedido:${pedido.id}`, JSON.stringify(pedido));
+      window.localStorage.setItem(`doce-oficio:pedido:${dados.pedido.id}`, JSON.stringify(dados.pedido));
       limpar();
-      navigate({ to: "/pedido/$orderId", params: { orderId: pedido.id } });
-    } catch (falha) {
-      setErro(
-        falha?.message?.includes("não está mais disponível")
-          ? falha.message
-          : "Não conseguimos registrar a reserva. Confira os dados e tente novamente."
-      );
-    } finally {
+      if (aba) aba.location.replace(dados.url);
+      else window.location.assign(dados.url);
       setEnviando(false);
+    } catch (falha) {
+      aba?.close();
+      setEnviando(false);
+      setErro(falha?.message || "Não conseguimos registrar o pedido. Confira os dados e tente novamente.");
     }
   }
 
@@ -115,8 +127,8 @@ function CarrinhoPage() {
         Sua reserva
       </h1>
       <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
-        Nenhum pagamento é feito agora. Confirmamos a disponibilidade do lote e você acerta o
-        valor na retirada ou na entrega.
+        Checkout com cartão em modo de teste. Nenhum valor real é cobrado e a encomenda
+        não deve ser produzida até a ativação comercial da loja.
       </p>
 
       <div className="mt-10 grid gap-12 lg:grid-cols-[1.25fr_1fr] lg:gap-16">
@@ -287,10 +299,14 @@ function CarrinhoPage() {
                   id="data"
                   type="date"
                   required
+                  min={dataMinima}
                   value={form.data_desejada}
                   onChange={atualizar("data_desejada")}
                   className={`mt-2 ${campo}`}
                 />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Antecedência mínima de {prazoDias} dias
+                </p>
               </div>
               <div>
                 <label htmlFor="periodo" className="eyebrow">
@@ -336,7 +352,7 @@ function CarrinhoPage() {
               <span className="tabular-nums">{taxa ? formatBRL(taxa) : "Grátis"}</span>
             </div>
             <div className="flex justify-between pt-2 font-heading text-xl">
-              <span>Total a pagar depois</span>
+              <span>Total</span>
               <span className="tabular-nums">{formatBRL(totalFinal)}</span>
             </div>
           </div>
@@ -353,11 +369,11 @@ function CarrinhoPage() {
             className="mt-6 inline-flex w-full items-center justify-center gap-2 bg-primary px-7 py-4 text-[11px] font-medium uppercase tracking-[0.18em] text-primary-foreground transition-colors hover:bg-accent disabled:opacity-60"
           >
             {enviando && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
-            {enviando ? "Registrando..." : "Confirmar reserva"}
+            {enviando ? "Abrindo pagamento..." : "Ir para o pagamento"}
           </button>
 
           <p className="mt-3 text-center text-xs text-muted-foreground">
-            Pagamento na retirada ou entrega · Pix, débito, crédito ou dinheiro
+            Pagamento seguro com cartão · processado pela Stripe
           </p>
         </form>
       </div>

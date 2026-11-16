@@ -27,6 +27,10 @@ function ProdutoPage() {
   const { adicionar } = useCart();
   const [quantidade, setQuantidade] = useState(1);
 
+  const esgotado = typeof produto.estoque === "number" && produto.estoque <= 0;
+  const limite = typeof produto.estoque === "number" ? Math.max(1, produto.estoque) : 99;
+  const prazoDias = produto.prazo_dias ?? 2;
+
   const adicionarAoCarrinho = () => {
     adicionar(produto, quantidade);
     toast.success(`${produto.nome} adicionado à reserva`);
@@ -75,10 +79,17 @@ function ProdutoPage() {
                 <dd className="leading-relaxed">{produto.ingredientes}</dd>
               </div>
             )}
+            {typeof produto.estoque === "number" && (
+              <div className="flex gap-6">
+                <dt className="w-32 shrink-0 text-muted-foreground">Lote</dt>
+                <dd>{produto.estoque > 0 ? `${produto.estoque} unidades disponíveis` : "Esgotado"}</dd>
+              </div>
+            )}
             <div className="flex gap-6">
               <dt className="w-32 shrink-0 text-muted-foreground">Encomenda</dt>
               <dd className="leading-relaxed">
-                Produzido sob encomenda com 48h de antecedência. Pagamento na retirada ou entrega.
+                Produzido sob encomenda com {prazoDias} dias de antecedência. Pagamento online com
+                cartão.
               </dd>
             </div>
           </dl>
@@ -96,7 +107,7 @@ function ProdutoPage() {
               <span className="w-10 text-center text-sm tabular-nums">{quantidade}</span>
               <button
                 type="button"
-                onClick={() => setQuantidade((q) => Math.min(99, q + 1))}
+                onClick={() => setQuantidade((q) => Math.min(limite, q + 1))}
                 className="flex h-12 w-12 items-center justify-center text-foreground/70 transition-colors hover:text-accent"
                 aria-label="Aumentar quantidade"
               >
@@ -107,10 +118,11 @@ function ProdutoPage() {
             <button
               type="button"
               onClick={adicionarAoCarrinho}
-              className="inline-flex h-12 items-center justify-center gap-2 bg-primary px-8 text-[11px] font-medium uppercase tracking-[0.18em] text-primary-foreground transition-colors hover:bg-accent"
+              disabled={esgotado}
+              className="inline-flex h-12 items-center justify-center gap-2 bg-primary px-8 text-[11px] font-medium uppercase tracking-[0.18em] text-primary-foreground transition-colors hover:bg-accent disabled:pointer-events-none disabled:opacity-50"
             >
               <Check className="h-4 w-4" aria-hidden="true" />
-              Adicionar à reserva
+              {esgotado ? "Esgotado neste lote" : "Adicionar à reserva"}
             </button>
 
             <Link

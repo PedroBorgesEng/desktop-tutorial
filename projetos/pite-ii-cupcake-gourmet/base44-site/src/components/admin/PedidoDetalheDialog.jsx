@@ -11,7 +11,12 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { formatBRL, formatarData } from "@/lib/format";
-import { PAGAMENTOS, STATUS_PEDIDO } from "@/lib/pedido-constantes";
+import {
+  PAGAMENTOS,
+  STATUS_PEDIDO,
+  classePagamentoStatus,
+  rotuloPagamentoStatus,
+} from "@/lib/pedido-constantes";
 
 export default function PedidoDetalheDialog({ pedido, open, onOpenChange, onAtualizado }) {
   const [status, setStatus] = useState("novo");
@@ -70,6 +75,16 @@ export default function PedidoDetalheDialog({ pedido, open, onOpenChange, onAtua
               <p className="mt-1">
                 {formatarData(pedido.data_desejada)} ·{" "}
                 {pedido.periodo === "manha" ? "manhã" : "tarde"}
+              </p>
+            </div>
+            <div>
+              <p className="eyebrow">Pagamento online</p>
+              <p className="mt-1">
+                <span
+                  className={`border px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] ${classePagamentoStatus(pedido.pagamento_status)}`}
+                >
+                  {rotuloPagamentoStatus(pedido.pagamento_status)}
+                </span>
               </p>
             </div>
             {pedido.email && (

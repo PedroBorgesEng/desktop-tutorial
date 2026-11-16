@@ -1,56 +1,39 @@
-# Doce Ofício — projeto acadêmico PITE II (versão Base44)
+# Doce Ofício — versão de loja virtual em homologação
 
-Este diretório contém o código-fonte completo da **versão pública do site** criada no Base44 (cópia sincronizada manualmente em 11/11/2026).
+**Projeto:** Cupcake Gourmet · PITE Engenharia de Software II  
+**Data da sincronização:** 16/11/2026
 
-**[Acessar o site publicado](https://cupcake-gourmet-pite-ii-6e0cb87a.base44.app)** · **[Abrir documentação técnica em PDF](https://base44.app/api/apps/6af46ee5dcb326846e0cb87a/files/mp/public/6af46ee5dcb326846e0cb87a/7b5f2e18c_Doce-Oficio-Documentacao-PITE-II.pdf)** · **[Ver implementação Python alternativa](../README.md)**
+- **Site publicado:** https://cupcake-gourmet-pite-ii-6e0cb87a.base44.app
+- **Editor Base44:** https://app.base44.com/apps/6af46ee5dcb326846e0cb87a/editor/preview
+- **Código do site:** esta pasta (`base44-site/`)
+- **Implementação independente:** pasta irmã `../app/` (Python/FastAPI), mantida sem alterações.
+- **Documentação PDF acadêmica:** `../docs/Documentacao_Versao_Base44_Situacao_2.pdf` (anterior à evolução comercial).
 
-O front-end foi desenvolvido em React/TanStack Start (HTML/CSS/JavaScript), e o back-end usa funções de servidor JavaScript, APIs de pedidos e catálogo, autenticação e entidades Base44. Não há pagamentos reais: pedidos são feitos para pagamento na retirada/entrega.
+## Capacidades implementadas
 
-Para rodar fora da hospedagem, é necessário configurar o ambiente Base44, suas entidades e autenticação. Esta cópia de código **não** sincroniza automaticamente alterações futuras do site, pois a integração GitHub do Base44 exige outro plano.
+Catálogo de doces, páginas de produtos, carrinho, retirada ou entrega, pedidos com processamento de preços no servidor, painel administrativo, estoque opcional por produto e prazo mínimo de produção. O checkout usa Stripe e o webhook verifica a assinatura e confere o valor.
 
-**Escopo dos testes:** houve compilação bem-sucedida relatada pelo construtor após correção de importação no painel e testes pontuais de funções de back-end; não há evidência de testes E2E de navegador aprovados para esta versão. Os 19 testes automatizados registrados na pasta Python são de **outra implementação**.
+## Atenção: pagamentos exclusivamente em teste
 
----
+A conexão Stripe está em modo **sandbox**, não há conta live validada e **não existe cobrança real**. O site mostra aviso de homologação. As fotos, descrições, preços, taxas, políticas e dados do estabelecimento precisam ser conferidos pelo proprietário antes de vender. A implementação não deve ser apresentada ao público como loja habilitada para vendas reais.
 
-## Instruções originais do template Base44
+## Arquitetura
 
-# Base44 App — TanStack Start
+- React 19 + TanStack Start, rotas em `src/routes/`
+- Funções de servidor JavaScript, Zod e API HTTP (`/api/checkout`, `/api/catalogo`, `/api/stripe-webhook`)
+- Entidades Base44: `Produto`, `Pedido`, `User`
+- Back-end persistente, autenticação e restrições administrativas gerenciadas pela Base44
+- Chaves de pagamentos via segredos do servidor, **não** armazenadas no GitHub
 
-A full-stack Base44 app: [TanStack Start](https://tanstack.com/start) (React 19, plain JavaScript) with file-based routes, server functions and server routes, server-rendered and hosted by Base44.
+## Como desenvolver
 
-## What is in the starter
+O projeto não depende apenas de executar JavaScript local: é preciso conectar um projeto Base44 com entidades e credenciais configuradas. Use o editor Base44 ou CLI correspondente; `package.json` oferece os comandos `npm run dev`, `npm run build` e `npm run lint`.
 
-| Route | File |
-| --- | --- |
-| `/` | `src/routes/index.jsx` — a server-rendered page whose loader calls a server function |
-| `GET /api/time` | `src/routes/api/time.js` — a server route: a raw HTTP endpoint next to the pages |
+## Homologação e pendências
 
-## Run locally
+- Código compilado no Base44 e pré-visualização disponível; o construtor testou funções Stripe em sandbox.
+- Um teste de navegação automatizado foi cadastrado, mas **não executado** por limite mensal da conta Base44.
+- Ainda é necessária validação independente em navegador, revisão de concorrência/expiração de reservas de estoque, teste de reembolsos, consentimento e informações comerciais, além de configurar provedores live.
+- A sincronização GitHub ↔ Base44 é **manual** neste plano, logo futuras mudanças devem ser exportadas novamente.
 
-```bash
-npm ci
-base44 login   # one-time per machine
-base44 link    # one-time per clone
-base44 dev     # local backend + app together
-```
-
-## Build and publish
-
-```bash
-npm run build         # -> dist/client (assets) + dist/server (the Worker)
-base44 deploy         # or publish from the Base44 builder
-```
-
-There is no `index.html`: the HTML document is rendered on the server from `src/routes/__root.jsx`. The build runs through the [Cloudflare Vite plugin](https://developers.cloudflare.com/workers/vite-plugin/), so dev and build both execute server code in `workerd`.
-
-## How the pieces fit
-
-- **Pages** are files in `src/routes/`. A route's `loader` runs on the server for a document request and in the browser for a client navigation; `Route.useLoaderData()` gives the component the resolved data.
-- **Server functions** (`src/lib/server-fns.js`) are RPCs created with `createServerFn`. `src/start.js` runs every one of them through `authMiddleware`, which sends the visitor's token along, so `context.getBase44()` returns a client acting as that visitor and entity access rules apply. `context.getBase44().asServiceRole` bypasses them, so use it only after authenticating the caller (`.middleware([requireUser])`) and checking they may access the records involved: server functions and server routes are public endpoints anyone can call with any input. See **Server Security** in `AGENTS.md`. Call it only in handlers that need Base44: it reads the platform headers, and a handler that never calls it works without them.
-- **Secrets** are read in server code with `import { secrets } from "base44:runtime"` → `secrets.get("NAME")`, inside a handler. Never `process.env`.
-- **Server routes** (`src/routes/api/*.js`) are raw HTTP endpoints for URLs something other than the app's own code requests (webhooks, downloads, feeds); the app's pages call server functions. `src/start.js` runs every request through `base44RequestMiddleware`, so their `server.handlers` receive the same `context.getBase44()` (`({ request, params, context }) => …`).
-- **Server-only code** lives in `*.server.js` files (TanStack refuses to bundle them for the browser).
-- **Auth** is resolved client-side after hydration (`useAuth()`); the server is anonymous on a document request, so give per-user pages `ssr: false`.
-- **Sign-in and gated pages** are not wired in the starter: `src/components/auth/` holds the pages (login, register, password reset, MCP consent) and a login gate for `src/routes/_authed/`, to add when the app needs them. See **Adding Authentication** in `AGENTS.md`.
-- **AI**: TanStack AI is installed and runs on the Base44 AI gateway, with no API key and usage billed to the app's AI credits. `gatewayModel(context.getBase44())` in `src/lib/ai.server.js` builds the adapter; `AGENTS.md` has a streaming chat example (a server route plus `useChat`).
-- **Caching**: the platform caches only what a route opts into via `headers()` (`Cache-Control: public, s-maxage=…`). Everything else is served fresh.
+Para mais detalhes, veja `docs/PREPARACAO_PARA_VENDAS.md` e `../docs/EVOLUCAO_COMERCIAL_2026-11-16.md`.

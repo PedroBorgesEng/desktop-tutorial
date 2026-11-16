@@ -19,12 +19,27 @@ export const STATUS_PEDIDO = [
 ];
 
 export const PAGAMENTOS = [
+  { value: "online", label: "Online (cartão)" },
   { value: "a_combinar", label: "A combinar" },
   { value: "pix", label: "Pix" },
   { value: "dinheiro", label: "Dinheiro" },
   { value: "debito", label: "Cartão de débito" },
   { value: "credito", label: "Cartão de crédito" },
 ];
+
+export const PAGAMENTO_STATUS = [
+  { value: "pendente", label: "Aguardando", classe: "bg-yellow-100 text-yellow-900 border-yellow-300" },
+  { value: "pago", label: "Pago", classe: "bg-primary/15 text-primary border-primary/30" },
+  { value: "cancelado", label: "Cancelado", classe: "bg-red-100 text-red-900 border-red-300" },
+];
+
+export function rotuloPagamentoStatus(valor) {
+  return PAGAMENTO_STATUS.find((p) => p.value === valor)?.label || "Aguardando";
+}
+
+export function classePagamentoStatus(valor) {
+  return PAGAMENTO_STATUS.find((p) => p.value === valor)?.classe || "bg-muted text-foreground";
+}
 
 export function rotuloStatus(valor) {
   return STATUS_PEDIDO.find((s) => s.value === valor)?.label || valor;

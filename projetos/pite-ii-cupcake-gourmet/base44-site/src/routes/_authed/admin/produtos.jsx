@@ -91,6 +91,10 @@ function ProdutosPage() {
                   <p className="text-xs text-muted-foreground">
                     {produto.categoria} · {formatBRL(produto.preco)}
                     {produto.porcao ? ` · ${produto.porcao}` : ""}
+                    {produto.estoque == null
+                      ? " · sem limite"
+                      : ` · ${produto.estoque} em estoque`}
+                    {produto.prazo_dias ? ` · ${produto.prazo_dias}d de prazo` : ""}
                   </p>
                 </div>
 

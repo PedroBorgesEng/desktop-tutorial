@@ -24,6 +24,8 @@ const VAZIO = {
   ingredientes: "",
   porcao: "",
   imagem_url: "",
+  estoque: "",
+  prazo_dias: 2,
   disponivel: true,
   destaque: false,
 };
@@ -46,6 +48,8 @@ export default function ProdutoDialog({ open, onOpenChange, produto, onSalvo }) 
             ingredientes: produto.ingredientes || "",
             porcao: produto.porcao || "",
             imagem_url: produto.imagem_url || "",
+            estoque: produto.estoque ?? "",
+            prazo_dias: produto.prazo_dias ?? 2,
             disponivel: produto.disponivel !== false,
             destaque: Boolean(produto.destaque),
           }
@@ -78,6 +82,8 @@ export default function ProdutoDialog({ open, onOpenChange, produto, onSalvo }) 
       ...form,
       preco: Number(form.preco),
       resumo: form.resumo || form.descricao.slice(0, 120),
+      estoque: form.estoque === "" ? null : Number(form.estoque),
+      prazo_dias: form.prazo_dias === "" ? 2 : Number(form.prazo_dias),
     };
     try {
       if (produto) {
@@ -170,6 +176,32 @@ export default function ProdutoDialog({ open, onOpenChange, produto, onSalvo }) 
                 value={form.porcao}
                 onChange={atualizar("porcao")}
                 placeholder="8 fatias"
+                className="mt-1.5"
+              />
+            </div>
+            <div>
+              <Label htmlFor="p-estoque">Estoque do lote</Label>
+              <Input
+                id="p-estoque"
+                type="number"
+                min="0"
+                step="1"
+                value={form.estoque}
+                onChange={atualizar("estoque")}
+                placeholder="Vazio = sem limite"
+                className="mt-1.5"
+              />
+            </div>
+            <div>
+              <Label htmlFor="p-prazo">Prazo mínimo (dias)</Label>
+              <Input
+                id="p-prazo"
+                type="number"
+                min="0"
+                step="1"
+                value={form.prazo_dias}
+                onChange={atualizar("prazo_dias")}
+                placeholder="2"
                 className="mt-1.5"
               />
             </div>

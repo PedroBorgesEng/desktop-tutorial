@@ -3,7 +3,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { base44 } from "@/api/base44Client";
 import PedidoDetalheDialog from "@/components/admin/PedidoDetalheDialog";
 import { formatBRL, formatarData } from "@/lib/format";
-import { STATUS_PEDIDO, classeStatus, rotuloStatus } from "@/lib/pedido-constantes";
+import {
+  STATUS_PEDIDO,
+  classePagamentoStatus,
+  classeStatus,
+  rotuloPagamentoStatus,
+  rotuloStatus,
+} from "@/lib/pedido-constantes";
 
 export const Route = createFileRoute("/_authed/admin/pedidos")({
   component: PedidosPage,
@@ -72,6 +78,7 @@ function PedidosPage() {
                 <th className="px-5 py-3 font-normal">Cliente</th>
                 <th className="px-5 py-3 font-normal">Recebimento</th>
                 <th className="px-5 py-3 font-normal">Total</th>
+                <th className="px-5 py-3 font-normal">Pagamento</th>
                 <th className="px-5 py-3 font-normal">Status</th>
               </tr>
             </thead>
@@ -100,6 +107,13 @@ function PedidosPage() {
                     </span>
                   </td>
                   <td className="px-5 py-4 tabular-nums">{formatBRL(pedido.total)}</td>
+                  <td className="px-5 py-4">
+                    <span
+                      className={`border px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] ${classePagamentoStatus(pedido.pagamento_status)}`}
+                    >
+                      {rotuloPagamentoStatus(pedido.pagamento_status)}
+                    </span>
+                  </td>
                   <td className="px-5 py-4">
                     <span
                       className={`border px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] ${classeStatus(pedido.status)}`}

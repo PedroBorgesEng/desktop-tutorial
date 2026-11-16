@@ -1,21 +1,21 @@
 const PASSOS = [
   {
     numero: "01",
-    titulo: "Monte a reserva",
+    titulo: "Monte o pedido",
     texto:
-      "Escolha os doces no catálogo e ajuste as quantidades na sua reserva. Sem cadastro e sem pagamento nesta etapa.",
+      "Escolha os doces no catálogo e ajuste as quantidades no carrinho. Sem cadastro: basta informar seus dados no fim.",
   },
   {
     numero: "02",
     titulo: "Escolha retirada ou entrega",
     texto:
-      "Informe nome, telefone e a data desejada. Confirmamos a disponibilidade do lote por mensagem em até 24h.",
+      "Informe nome, telefone e a data desejada. O prazo mínimo de cada doce já aparece no carrinho.",
   },
   {
     numero: "03",
-    titulo: "Pague na entrega",
+    titulo: "Pague online",
     texto:
-      "O pagamento é feito na retirada no ateliê ou no recebimento, por Pix, débito ou dinheiro.",
+      "Pagamento com cartão em ambiente seguro. Aprovado o pagamento, o ateliê já entra na produção da encomenda.",
   },
 ];
 

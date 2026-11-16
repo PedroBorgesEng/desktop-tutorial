@@ -6,7 +6,7 @@ const itemSchema = z.object({
   quantidade: z.number().int().min(1).max(99),
 });
 
-/** Contrato de entrada de uma reserva — usado pela server function e pelo endpoint /api/pedidos. */
+/** Contrato de entrada de um pedido — usado pela server function e pelo endpoint /api/pedidos. */
 export const esquemaReserva = z.object({
   nome_cliente: z.string().trim().min(2).max(120),
   telefone: z.string().trim().min(8).max(30),
@@ -19,14 +19,42 @@ export const esquemaReserva = z.object({
   itens: z.array(itemSchema).min(1).max(40),
 });
 
+export const PRAZO_PADRAO = 2;
+
 function gerarCodigo() {
   return `DO-${crypto.randomUUID().replace(/-/g, "").slice(0, 6).toUpperCase()}`;
 }
 
+function dataComDias(dias) {
+  const data = new Date();
+  data.setUTCDate(data.getUTCDate() + dias);
+  return data.toISOString().slice(0, 10);
+}
+
+function somarQuantidades(itens) {
+  const mapa = new Map();
+  for (const item of itens) {
+    mapa.set(item.produto_id, (mapa.get(item.produto_id) || 0) + item.quantidade);
+  }
+  return mapa;
+}
+
+function estoqueDe(produto) {
+  return produto.estoque === undefined || produto.estoque === null || produto.estoque === ""
+    ? null
+    : Number(produto.estoque);
+}
+
+function prazoDe(produto) {
+  return produto.prazo_dias === undefined || produto.prazo_dias === null || produto.prazo_dias === ""
+    ? PRAZO_PADRAO
+    : Number(produto.prazo_dias);
+}
+
 /**
- * Regra de negócio da reserva, no servidor:
- * relê os preços do catálogo (o navegador nunca define valores), valida
- * disponibilidade e grava o pedido com status "novo".
+ * Regra de negócio do pedido, no servidor:
+ * relê os preços do catálogo (o navegador nunca define valores), confere lote e prazo,
+ * baixa o estoque e grava o pedido aguardando pagamento.
  */
 export async function criarPedido(base44ServiceRole, dados) {
   if (dados.tipo_entrega === "entrega" && (dados.endereco || "").length < 10) {
@@ -57,7 +85,7 @@ export async function criarPedido(base44ServiceRole, dados) {
   const itens = dados.itens.map((item) => {
     const produto = catalogo.get(item.produto_id);
     if (!produto || produto.disponivel === false) {
-      throw new Error("Um dos itens da reserva não está mais disponível. Atualize o carrinho.");
+      throw new Error("Um dos itens do pedido não está mais disponível. Atualize o carrinho.");
     }
     return {
       produto_id: produto.id,
@@ -67,8 +95,32 @@ export async function criarPedido(base44ServiceRole, dados) {
     };
   });
 
-  const subtotalBruto = itens.reduce((soma, item) => soma + item.preco_unitario * item.quantidade, 0);
-  const subtotal = Number(subtotalBruto.toFixed(2));
+  const quantidades = somarQuantidades(dados.itens);
+  let prazoMinimo = 0;
+
+  for (const [produtoId, quantidade] of quantidades) {
+    const produto = catalogo.get(produtoId);
+    const estoque = estoqueDe(produto);
+    if (estoque !== null && quantidade > estoque) {
+      throw new Error(
+        estoque > 0
+          ? `Restam ${estoque} unidade(s) de ${produto.nome} neste lote.`
+          : `${produto.nome} está esgotado neste lote.`
+      );
+    }
+    prazoMinimo = Math.max(prazoMinimo, prazoDe(produto));
+  }
+
+  const dataMinima = dataComDias(prazoMinimo);
+  if (dados.data_desejada < dataMinima) {
+    throw new Error(
+      `Para este pedido precisamos de ${prazoMinimo} dias de antecedência. A data mais próxima é ${dataMinima.split("-").reverse().join("/")}.`
+    );
+  }
+
+  const subtotal = Number(
+    itens.reduce((soma, item) => soma + item.preco_unitario * item.quantidade, 0).toFixed(2)
+  );
   const taxa_entrega = dados.tipo_entrega === "entrega" ? TAXA_ENTREGA : 0;
   const total = Number((subtotal + taxa_entrega).toFixed(2));
 
@@ -87,8 +139,20 @@ export async function criarPedido(base44ServiceRole, dados) {
     taxa_entrega,
     total,
     status: "novo",
-    pagamento: "a_combinar",
+    pagamento: "online",
+    pagamento_status: "pendente",
   });
+
+  // Baixa do lote: só para produtos com estoque controlado.
+  await Promise.all(
+    [...quantidades].map(([produtoId, quantidade]) => {
+      const produto = catalogo.get(produtoId);
+      if (estoqueDe(produto) === null) return null;
+      return base44ServiceRole.entities.Produto.update(produtoId, {
+        estoque: Number(produto.estoque) - quantidade,
+      });
+    })
+  );
 
   return {
     id: pedido.id,
@@ -107,5 +171,6 @@ export async function criarPedido(base44ServiceRole, dados) {
     total: pedido.total,
     status: pedido.status,
     pagamento: pedido.pagamento,
+    pagamento_status: pedido.pagamento_status,
   };
 }

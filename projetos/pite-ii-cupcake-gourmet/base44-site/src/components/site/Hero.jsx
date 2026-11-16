@@ -28,7 +28,7 @@ export default function Hero() {
 
           <p className="mt-6 max-w-md text-base leading-relaxed text-foreground/75 sm:text-lg">
             Bolos, tortas e doces de forno com manteiga, cacau de origem e frutas da estação.
-            Escolha no catálogo, reserve pelo site e acerte o pagamento na retirada.
+            Escolha no catálogo e pague online, com retirada no ateliê ou entrega.
           </p>
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">

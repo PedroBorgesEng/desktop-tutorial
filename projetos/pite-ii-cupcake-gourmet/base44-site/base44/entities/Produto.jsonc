@@ -47,6 +47,15 @@
       "type": "string",
       "description": "URL da foto do produto"
     },
+    "estoque": {
+      "type": "number",
+      "description": "Unidades dispon\u00edveis neste lote. Vazio significa sem limite."
+    },
+    "prazo_dias": {
+      "type": "number",
+      "default": 2,
+      "description": "Anteced\u00eancia m\u00ednima, em dias, para a data de retirada ou entrega"
+    },
     "disponivel": {
       "type": "boolean",
       "default": true,

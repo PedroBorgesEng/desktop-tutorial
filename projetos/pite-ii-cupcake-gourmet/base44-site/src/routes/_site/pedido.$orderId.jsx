@@ -1,20 +1,28 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Clock } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
 import { formatBRL, formatarData } from "@/lib/format";
 import { PAGAMENTOS, classeStatus, rotuloStatus } from "@/lib/pedido-constantes";
+import { consultarPedido } from "@/lib/server-fns";
 
 export const Route = createFileRoute("/_site/pedido/$orderId")({
+  validateSearch: (search) => ({
+    session_id: typeof search.session_id === "string" ? search.session_id : undefined,
+  }),
   head: () => ({
-    meta: [{ title: "Reserva registrada · Doce Ofício" }],
+    meta: [{ title: "Pedido · Doce Ofício" }],
   }),
   component: PedidoPage,
 });
 
 function PedidoPage() {
   const { orderId } = Route.useParams();
+  const { session_id } = Route.useSearch();
+  const buscarPedido = useServerFn(consultarPedido);
   const [pedido, setPedido] = useState(null);
   const [carregado, setCarregado] = useState(false);
+  const pago = pedido?.pagamento_status === "pago";
 
   useEffect(() => {
     try {
@@ -24,7 +32,30 @@ function PedidoPage() {
       /* sem resumo salvo neste navegador */
     }
     setCarregado(true);
-  }, [orderId]);
+
+    if (!session_id) return undefined;
+
+    let ativo = true;
+    (async () => {
+      for (let tentativa = 0; tentativa < 3; tentativa += 1) {
+        const resposta = await buscarPedido({ data: { id: orderId, sessao: session_id } });
+        if (!ativo) return;
+        if (resposta?.pedido) {
+          setPedido(resposta.pedido);
+          window.localStorage.setItem(
+            `doce-oficio:pedido:${orderId}`,
+            JSON.stringify(resposta.pedido)
+          );
+          if (resposta.pedido.pagamento_status === "pago") return;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 2500));
+      }
+    })();
+
+    return () => {
+      ativo = false;
+    };
+  }, [orderId, session_id]);
 
   if (!carregado) return null;
 
@@ -49,18 +80,32 @@ function PedidoPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-16 lg:px-10 lg:py-20">
-      <div className="flex items-center gap-3 text-primary">
-        <CheckCircle2 className="h-6 w-6" aria-hidden="true" />
-        <p className="eyebrow text-primary">Reserva registrada</p>
+      <div className={`flex items-center gap-3 ${pago ? "text-primary" : "text-accent"}`}>
+        {pago ? (
+          <CheckCircle2 className="h-6 w-6" aria-hidden="true" />
+        ) : (
+          <Clock className="h-6 w-6" aria-hidden="true" />
+        )}
+        <p className="eyebrow">{pago ? "Pagamento confirmado" : "Aguardando pagamento"}</p>
       </div>
 
       <h1 className="mt-4 font-heading text-4xl font-light tracking-tight sm:text-5xl">
-        Recebemos sua reserva.
+        {pago ? "Pedido confirmado." : "Pedido registrado."}
       </h1>
       <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">
-        Guarde o código <strong className="text-foreground">{pedido.codigo}</strong>. Vamos
-        confirmar a disponibilidade do lote pelo telefone{" "}
-        <strong className="text-foreground">{pedido.telefone}</strong> em até 24h.
+        {pago ? (
+          <>
+            Pagamento aprovado e encomenda garantida para{" "}
+            <strong className="text-foreground">{formatarData(pedido.data_desejada)}</strong>.
+            Guarde o código <strong className="text-foreground">{pedido.codigo}</strong>.
+          </>
+        ) : (
+          <>
+            Estamos aguardando a confirmação do pagamento. Código{" "}
+            <strong className="text-foreground">{pedido.codigo}</strong>. Se o pagamento não foi
+            concluído, refaça o pedido ou fale com o ateliê.
+          </>
+        )}
       </p>
 
       <div className="mt-10 border border-border bg-card">
@@ -134,8 +179,11 @@ function PedidoPage() {
           <div>
             <dt className="eyebrow">Pagamento</dt>
             <dd className="mt-1">
-              {PAGAMENTOS.find((p) => p.value === pedido.pagamento)?.label || "A combinar"} — acertado
-              na retirada ou entrega
+              {pedido.pagamento === "online"
+                ? pago
+                  ? "Pago online com cartão"
+                  : "Online — aguardando confirmação"
+                : `${PAGAMENTOS.find((p) => p.value === pedido.pagamento)?.label || "A combinar"} — acertado na retirada ou entrega`}
             </dd>
           </div>
         </dl>

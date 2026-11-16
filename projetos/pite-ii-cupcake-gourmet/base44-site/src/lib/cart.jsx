@@ -27,12 +27,17 @@ export function CartProvider({ children }) {
   }, [itens, carregado]);
 
   const value = useMemo(() => {
+    const limiteDoItem = (item) =>
+      typeof item.estoque === "number" ? Math.max(1, Math.min(99, item.estoque)) : 99;
+
     const adicionar = (produto, quantidade = 1) => {
       setItens((atual) => {
         const existente = atual.find((i) => i.id === produto.id);
         if (existente) {
           return atual.map((i) =>
-            i.id === produto.id ? { ...i, quantidade: Math.min(99, i.quantidade + quantidade) } : i
+            i.id === produto.id
+              ? { ...i, quantidade: Math.min(limiteDoItem(i), i.quantidade + quantidade) }
+              : i
           );
         }
         return [
@@ -43,6 +48,8 @@ export function CartProvider({ children }) {
             preco: Number(produto.preco),
             imagem_url: produto.imagem_url,
             categoria: produto.categoria,
+            estoque: typeof produto.estoque === "number" ? produto.estoque : null,
+            prazo_dias: Number(produto.prazo_dias ?? 2),
             quantidade: Math.min(99, Math.max(1, quantidade)),
           },
         ];
@@ -52,7 +59,11 @@ export function CartProvider({ children }) {
     const alterarQuantidade = (id, quantidade) => {
       setItens((atual) =>
         atual
-          .map((i) => (i.id === id ? { ...i, quantidade: Math.max(0, Math.min(99, quantidade)) } : i))
+          .map((i) =>
+            i.id === id
+              ? { ...i, quantidade: Math.max(0, Math.min(limiteDoItem(i), quantidade)) }
+              : i
+          )
           .filter((i) => i.quantidade > 0)
       );
     };

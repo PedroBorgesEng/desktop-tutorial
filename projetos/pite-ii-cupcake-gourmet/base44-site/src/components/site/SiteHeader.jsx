@@ -15,6 +15,9 @@ export default function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/80 bg-background/90 backdrop-blur">
+      <p role="status" className="bg-amber-100 px-4 py-2 text-center text-xs font-semibold text-amber-950">
+        Loja em homologação — pagamentos em modo de teste. Nenhum valor real é cobrado.
+      </p>
       <div className="mx-auto flex h-20 max-w-[1400px] items-center justify-between gap-6 px-6 lg:px-10">
         <Link to="/" className="group flex items-baseline gap-3">
           <span className="font-heading text-2xl font-semibold tracking-tight">Doce Ofício</span>
