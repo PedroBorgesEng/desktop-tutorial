@@ -1,36 +1,34 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { criarPedido, esquemaReserva } from "@/lib/reservas.server";
-import {
-  configuracaoMercadoPago,
-  criarPreferenciaMercadoPago,
-} from "@/lib/mercadopago.server";
+import { criarCheckoutPagBank, statusPagBank } from "@/lib/pagbank.server";
 
-/** Recompõe o lote após uma falha de criação da preferência (best effort).
- * Antes de produção é indispensável controle transacional de concorrência.
+/**
+ * Compensação de erro de checkout; não substitui transação de estoque.
+ * Não habilitar vendas reais antes de testar concorrência e expiração.
  */
-async function compensarFalha(base44, pedido) {
+async function compensarErro(base44, pedido) {
+  if (!pedido?.id) return;
   try {
-    const quantidade = new Map();
+    const quantidades = new Map();
     for (const item of pedido.itens || []) {
-      quantidade.set(item.produto_id,
-        (quantidade.get(item.produto_id) || 0) + Number(item.quantidade));
+      quantidades.set(item.produto_id,
+        (quantidades.get(item.produto_id) || 0) + Number(item.quantidade));
     }
-    await Promise.all([...quantidade].map(async ([id, qtd]) => {
+    for (const [id, qtd] of quantidades) {
       const produto = await base44.entities.Produto.get(id);
       if (produto?.estoque !== null &&
-          produto?.estoque !== undefined &&
-          produto?.estoque !== "") {
+          produto?.estoque !== undefined && produto?.estoque !== "") {
         await base44.entities.Produto.update(id, {
           estoque: Number(produto.estoque) + qtd,
         });
       }
-    }));
+    }
     await base44.entities.Pedido.update(pedido.id, {
       status: "cancelado",
       pagamento_status: "cancelado",
     });
-  } catch (e) {
-    console.error("Falha ao compensar reserva. Verificar painel:", pedido.id, e?.message);
+  } catch (error) {
+    console.error("Erro ao reverter checkout incompleto", pedido.id, error?.message);
   }
 }
 
@@ -38,66 +36,65 @@ export const Route = createFileRoute("/api/checkout")({
   server: {
     handlers: {
       GET: async () => {
-        const status = configuracaoMercadoPago();
+        const config = statusPagBank();
         return Response.json({
-          provedor: "mercadopago",
+          provedor: "pagbank",
           metodos: ["pix", "cartao"],
-          habilitado: status.habilitado,
-          modo: status.modo,
-        });
+          habilitado: config.enabled,
+          modo: config.mode,
+        }, { headers: { "Cache-Control": "no-store" } });
       },
-
       POST: async ({ request, context }) => {
-        // Sem conta/token + assinatura, nenhum pedido é criado.
-        const config = configuracaoMercadoPago();
-        if (!config.habilitado) {
+        const config = statusPagBank();
+        // Bloqueio ANTES de qualquer persistência ou reserva de estoque.
+        if (!config.enabled) {
           return Response.json({
-            erro: "Pix e cartão estão sendo configurados. Ainda não é possível pagar neste site.",
+            erro: "Pix e cartão pelo PagBank ainda não estão disponíveis. Aguardando ativação da conta.",
           }, { status: 503 });
         }
-
-        let corpo;
+        let raw;
         try {
-          corpo = await request.json();
+          raw = await request.json();
         } catch {
           return Response.json({ erro: "JSON inválido." }, { status: 400 });
         }
-        const validacao = esquemaReserva.safeParse(corpo);
-        if (!validacao.success) {
+        const result = esquemaReserva.safeParse(raw);
+        if (!result.success) {
           return Response.json({
             erro: "Dados inválidos.",
-            detalhes: validacao.error.issues.map(i => ({
-              campo: i.path.join("."), mensagem: i.message,
+            detalhes: result.error.issues.map(issue => ({
+              campo: issue.path.join("."), mensagem: issue.message,
             })),
           }, { status: 400 });
         }
-
         const base44 = context.getBase44().asServiceRole;
-        let pedido = null;
+        let pedido;
         try {
-          pedido = await criarPedido(base44, validacao.data);
-          const consultaToken = crypto.randomUUID();
-          const checkout = await criarPreferenciaMercadoPago(pedido, consultaToken);
+          pedido = await criarPedido(base44, result.data);
+          const tokenConsulta = crypto.randomUUID();
+          const checkout = await criarCheckoutPagBank(pedido, tokenConsulta);
           await base44.entities.Pedido.update(pedido.id, {
-            pagamento_gateway: "mercadopago",
-            mercadopago_preference_id: checkout.id,
-            consulta_token: consultaToken,
+            pagamento_gateway: "pagbank",
+            pagbank_checkout_id: checkout.id,
+            pagbank_env: checkout.mode,
+            consulta_token: tokenConsulta,
           });
           return Response.json({
+            url: checkout.url,
+            modo: checkout.mode,
             pedido: {
               ...pedido,
-              pagamento_gateway: "mercadopago",
-              mercadopago_preference_id: checkout.id,
-              consulta_token: consultaToken,
+              pagamento_gateway: "pagbank",
+              pagbank_checkout_id: checkout.id,
+              pagbank_env: checkout.mode,
+              consulta_token: tokenConsulta,
             },
-            url: checkout.url,
-            modo: checkout.modo,
           }, { status: 201 });
-        } catch (erro) {
-          if (pedido?.id) await compensarFalha(base44, pedido);
-          console.error("Checkout Mercado Pago:", erro?.message);
+        } catch (error) {
+          if (pedido) await compensarErro(base44, pedido);
+          console.error("Checkout PagBank:", error?.message);
           return Response.json({
-            erro: erro?.message || "Não foi possível iniciar o pagamento.",
+            erro: error?.message || "Falha ao iniciar pagamento. Tente novamente.",
           }, { status: 422 });
         }
       },

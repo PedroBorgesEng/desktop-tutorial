@@ -73,11 +73,11 @@ function CarrinhoPage() {
       return;
     }
     if (!pagamentos?.habilitado) {
-      setErro("Pix e cartão ainda não estão disponíveis. Aguarde a configuração da loja.");
+      setErro("Pix e cartão pelo PagBank ainda não estão disponíveis. Aguarde a configuração da loja.");
       return;
     }
 
-    // Checkout hospedado pelo Mercado Pago deve abrir como página inteira: em preview (iframe)
+    // Checkout hospedado no PagBank deve abrir como página inteira: em preview (iframe)
     // a aba é aberta no próprio clique, antes de qualquer espera.
     const enquadrado = window.self !== window.top;
     const aba = enquadrado ? window.open("", "_blank") : null;
@@ -141,7 +141,7 @@ function CarrinhoPage() {
         Sua reserva
       </h1>
       <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
-        Escolha Pix ou cartão no ambiente de pagamento do Mercado Pago.
+        Escolha Pix ou cartão no ambiente seguro de pagamento do PagBank.
         {pagamentos?.modo !== "producao" && " Esta loja permanece em homologação, sem cobrança real."}
       </p>
 
@@ -387,11 +387,11 @@ function CarrinhoPage() {
           </button>
 
           <p className="mt-3 text-center text-xs text-muted-foreground">
-            Pix ou cartão · checkout Mercado Pago {pagamentos?.modo === "teste" ? "(ambiente de testes)" : ""}
+            Pix ou cartão · Checkout PagBank {pagamentos?.modo === "teste" ? "(ambiente de testes)" : ""}
           </p>
           {!pagamentos?.habilitado && (
             <p role="status" className="mt-2 text-center text-xs text-amber-800">
-              O estabelecimento ainda não ativou sua conta Mercado Pago. Não há cobranças nem criação de novos pedidos.
+              A conta PagBank da loja ainda não está configurada. Não há cobranças nem criação de novos pedidos.
             </p>
           )}
         </form>

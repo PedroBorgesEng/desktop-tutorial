@@ -1,33 +1,46 @@
-# Doce Ofício — versão Base44 (Pix e cartão)
+# Doce Ofício — Pix e cartão no Checkout PagBank
 
-**Versão publicada em 16/11/2026:** https://cupcake-gourmet-pite-ii-6e0cb87a.base44.app
+**Loja:** https://cupcake-gourmet-pite-ii-6e0cb87a.base44.app
 
-## Estado atual
+**Estado:** versão de homologação. Nenhuma cobrança real ativada.
 
-- Integração **Mercado Pago Checkout Pro** preparada para Pix e cartão;
-- Cobranças e criação de novos pedidos bloqueadas enquanto não houver conta Mercado Pago configurada;
-- Checkout hospedado no Mercado Pago, sem captura de dados de cartão pelo site;
-- Processamento de valores e validação de pedidos no servidor;
-- Webhook autenticado que consulta o pagamento diretamente no provedor;
-- Catálogo, carrinho, estoque e prazo mínimo para encomendas;
-- Alertas de homologação e remoção de contatos/endereço de demonstração;
-- Integração Stripe anterior mantida apenas como legado para pedidos anteriores de teste.
+## Tecnologias
 
-## Ambiente
+- React, TanStack Start, CSS e JavaScript
+- Back-end com funções servidor e rotas HTTP
+- Persistência e autenticação por entidades Base44
+- Checkout PagBank hospedado (Pix + cartão de crédito) — integração preparada
 
-Front-end em React/TanStack Start e backend JavaScript com Base44 (entidades Produto, Pedido e User). Código-fonte nos diretórios `src/` e `base44/`.
+## Rotas e arquivos
 
-A integração Mercado Pago exige credenciais de sua conta configuradas como **segredos privados** do Base44: `MERCADOPAGO_ACCESS_TOKEN`, `MERCADOPAGO_WEBHOOK_SECRET` e, apenas depois de completa homologação, `MERCADOPAGO_LIVE_ENABLED=true`.
+- `GET /api/checkout`: retorna disponibilidade e ambiente PagBank.
+- `POST /api/checkout`: cria pedido provisório e checkout, **bloqueado com 503 sem credenciais**.
+- `POST /api/pagbank-webhook`: valida assinatura do corpo bruto com ECDSA SHA256, confirma Order com a API, verifica valor e referência, atualiza status.
+- `src/lib/pagbank.server.js`: integração PagBank e utilitários de validação.
+- `src/lib/reservas.server.js`: preços e validações de estoque/prazo no servidor.
+- `base44/entities/Pedido.jsonc`: campos de acompanhamento de pagamentos.
+- `src/routes/_site/`: catálogo, carrinho e pedido.
+- `src/routes/_authed/admin/`: painel administrativo.
 
-**Nenhum token ou dado de cliente foi incluído neste repositório.** As alterações no Base44 precisam ser sincronizadas manualmente com o GitHub.
+## Requisitos para testes e implantação
 
-## Documentação
+Leia [docs/PAGBANK_SETUP.md](docs/PAGBANK_SETUP.md). Tokens e chave pública do webhook devem ser inseridos **somente nos segredos do Base44**, nunca no GitHub.
 
-- [Preparação para vendas](./docs/PREPARACAO_PARA_VENDAS.md).
-- [Plano de implantação Pix e cartão](../docs/INTEGRACAO_PIX_CARTAO_2026-11-16.md).
-- [Código da implementação alternativa em Python](../README.md).
-- [Relatório acadêmico em PDF](../docs/Documentacao_Versao_Base44_Situacao_2.pdf) — descreve versão anterior e não substitui os testes comerciais.
+- Teste: `PAGBANK_SANDBOX_TOKEN` e `PAGBANK_SANDBOX_WEBHOOK_PUBLIC_KEY`.
+- Produção: `PAGBANK_LIVE_TOKEN`, `PAGBANK_LIVE_WEBHOOK_PUBLIC_KEY` e `PAGBANK_LIVE_ENABLED=true`, **somente após homologação e autorização expressa do proprietário**.
+- Sem credenciais, a loja permanece pública para ver produtos, mas **não aceita pedidos nem pagamentos**.
 
-## Limitações para produção
+**Importante:** fluxo de estoque concorrente, reserva não paga, expiração, cancelamentos, reembolsos e testes end-to-end devem ser concluídos antes de qualquer ativação comercial. O app preserva arquivos de integrações anteriores Mercado Pago e Stripe para histórico/legado, mas o carrinho usa o PagBank.
 
-Ainda não foram homologados pagamentos reais, confirmação/expiração de Pix, reembolsos, concorrência de estoque e recuperação de carrinhos abandonados. A operação depende de fotos e preços reais, dados do estabelecimento, políticas comerciais e validação jurídica/fiscal.
+## GitHub
+
+A publicação entre Base44 e GitHub é **manual**. O código espelhado fica em `projetos/pite-ii-cupcake-gourmet/base44-site/` do repositório PedroBorgesEng/desktop-tutorial.
+
+## Referências técnicas oficiais
+
+- https://developer.pagbank.com.br/docs/checkout
+- https://developer.pagbank.com.br/reference/criar-checkout
+- https://developer.pagbank.com.br/reference/webhooks-checkout
+- https://developer.pagbank.com.br/reference/validacao-de-autenticidade
+
+Não são armazenados segredos nem dados pessoais no repositório.

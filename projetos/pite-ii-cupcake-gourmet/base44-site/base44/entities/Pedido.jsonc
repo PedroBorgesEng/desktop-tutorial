@@ -1,7 +1,7 @@
 {
   "name": "Pedido",
   "type": "object",
-  "description": "Pedido de confeitaria. Pagamento por Pix ou cart\u00e3o em checkout hospedado; somente webhook autenticado confirma aprova\u00e7\u00e3o.",
+  "description": "Pedido de confeitaria. PagBank \u00e9 o checkout preferencial; pagamentos confirmados somente ap\u00f3s verifica\u00e7\u00e3o de assinatura e consulta \u00e0 API do provedor.",
   "properties": {
     "codigo": {
       "type": "string",
@@ -153,7 +153,8 @@
       "enum": [
         "stripe",
         "mercadopago",
-        "nenhum"
+        "nenhum",
+        "pagbank"
       ],
       "description": "Provedor do checkout utilizado"
     },
@@ -168,6 +169,22 @@
     "consulta_token": {
       "type": "string",
       "description": "Token aleat\u00f3rio de consulta por comprador (n\u00e3o \u00e9 senha)"
+    },
+    "pagbank_checkout_id": {
+      "type": "string",
+      "description": "Identificador do checkout hospedado PagBank (CHEC_...)"
+    },
+    "pagbank_order_id": {
+      "type": "string",
+      "description": "Identificador do pagamento PagBank (ORDE_...)"
+    },
+    "pagbank_env": {
+      "type": "string",
+      "enum": [
+        "teste",
+        "producao"
+      ],
+      "description": "Ambiente do provedor no momento da cria\u00e7\u00e3o do checkout"
     }
   },
   "required": [

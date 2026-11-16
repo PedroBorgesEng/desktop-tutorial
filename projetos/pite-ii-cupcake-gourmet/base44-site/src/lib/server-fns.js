@@ -49,6 +49,7 @@ export const consultarPedido = createServerFn({ method: "POST" })
     try {
       const pedido = await base44.entities.Pedido.get(data.id);
       if (!pedido || !(
+        (pedido.pagbank_checkout_id && pedido.consulta_token === data.sessao) ||
         (pedido.mercadopago_preference_id && pedido.consulta_token === data.sessao) ||
         (pedido.stripe_session_id && pedido.stripe_session_id === data.sessao)
       )) {

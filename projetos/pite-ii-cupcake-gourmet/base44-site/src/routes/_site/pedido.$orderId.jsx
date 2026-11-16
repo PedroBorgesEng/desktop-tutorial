@@ -23,12 +23,13 @@ function PedidoPage() {
   const buscarPedido = useServerFn(consultarPedido);
   const [pedido, setPedido] = useState(null);
   const [carregado, setCarregado] = useState(false);
-  const pago = pedido?.pagamento_status === "pago";
+  // Apenas o retorno validado pelo servidor pode confirmar pagamento.
+  const pago = pedido?.pagamento_status === "pago" && pedido?.__confirmadoServidor === true;
 
   useEffect(() => {
     try {
       const salvo = window.localStorage.getItem(`doce-oficio:pedido:${orderId}`);
-      if (salvo) setPedido(JSON.parse(salvo));
+      if (salvo) setPedido({ ...JSON.parse(salvo), pagamento_status: "pendente", __confirmadoServidor: false });
     } catch {
       /* sem resumo salvo neste navegador */
     }
@@ -42,10 +43,10 @@ function PedidoPage() {
         const resposta = await buscarPedido({ data: { id: orderId, sessao: session_id } });
         if (!ativo) return;
         if (resposta?.pedido) {
-          setPedido(resposta.pedido);
+          setPedido({ ...resposta.pedido, __confirmadoServidor: true });
           window.localStorage.setItem(
             `doce-oficio:pedido:${orderId}`,
-            JSON.stringify(resposta.pedido)
+            JSON.stringify({ ...resposta.pedido, pagamento_status: "pendente" })
           );
           if (resposta.pedido.pagamento_status === "pago") return;
         }
@@ -116,7 +117,7 @@ function PedidoPage() {
       )}
       {retorno === "pendente" && !pago && (
         <p className="mt-6 border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
-          Pagamento Pix pendente. Aguarde a confirmação automática do Mercado Pago.
+          Pagamento Pix pendente. Aguarde a confirmação automática do PagBank.
         </p>
       )}
 
@@ -197,7 +198,7 @@ function PedidoPage() {
                   : pedido.pagamento === "credito" || pedido.pagamento === "debito"
                     ? "Pagamento com cartão confirmado"
                     : "Pagamento online confirmado"
-                : "Pix ou cartão — aguardando confirmação do Mercado Pago"}
+                : "Pix ou cartão — aguardando confirmação do PagBank"}
             </dd>
           </div>
         </dl>
