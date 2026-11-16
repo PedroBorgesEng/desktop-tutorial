@@ -10,6 +10,11 @@ const SANDBOX_API = "https://sandbox.api.pagseguro.com";
 const LIVE_API = "https://api.pagseguro.com";
 const WEBHOOK_URL = SITE + "/api/pagbank-webhook";
 
+// Trava de segurança de publicação: vendas reais só poderão ser ativadas
+// após testes ponta a ponta, correção de estoque/expiração e homologação
+// comercial do PagBank. Não remover sem uma revisão explícita de lançamento.
+const LIVE_RELEASE_APPROVED = false;
+
 export function statusPagBank() {
   const liveRequested = secrets.get("PAGBANK_LIVE_ENABLED") === "true";
   const tokenTest = secrets.get("PAGBANK_SANDBOX_TOKEN") || "";
@@ -17,7 +22,9 @@ export function statusPagBank() {
   const tokenLive = secrets.get("PAGBANK_LIVE_TOKEN") || "";
   const publicLive = secrets.get("PAGBANK_LIVE_WEBHOOK_PUBLIC_KEY") || "";
   // Não permitir queda automática de produção para testes.
-  const enabled = liveRequested ? Boolean(tokenLive && publicLive) : Boolean(tokenTest && publicTest);
+  const enabled = liveRequested
+    ? Boolean(LIVE_RELEASE_APPROVED && tokenLive && publicLive)
+    : Boolean(tokenTest && publicTest);
   return {
     enabled,
     mode: !enabled ? "pendente" : liveRequested ? "producao" : "teste",

@@ -4,6 +4,29 @@
 
 O Checkout PagBank substitui o Checkout Pro Mercado Pago no carrinho. O PagBank hospeda a página de pagamento e apresenta Pix e cartão de crédito conforme a disponibilidade do estabelecimento. A loja não armazena número nem CVV do cartão.
 
+## Origem correta do token — produção versus Sandbox
+
+**Importante:** O token gerado em **PagBank → Vendas → Integrações → Gerar Token** é de **PRODUÇÃO** e usa autenticação `Authorization: Bearer <token>` na API atual de Checkout. Não é um token de testes. A conta também pode precisar de homologação/liberação antes de usar `POST /checkouts` em produção.
+
+O proprietário já compartilhou um token de produção em uma conversa. **Considere esse token exposto: revogue e gere outro no PagBank antes de utilizá-lo.** Não copie o token antigo para o Base44, nem no Sandbox, nem no código. O e-mail da conta não é necessário para autenticação da API moderna de Checkout.
+
+Para testar sem cobranças reais:
+1. Acesse [PagBank Developers](https://portaldev.pagbank.com.br/) e, na aba **Tokens**, obtenha o token **Sandbox**. Um token gerado em Vendas → Integrações não substitui este.
+2. No editor Base44 da loja, cadastre o token Sandbox **somente** em `PAGBANK_SANDBOX_TOKEN`.
+3. Consulte a chave pública específica para validação de notificações **com `type=webhook`**, utilizando o token Sandbox pelo endpoint documentado em [Validação de autenticidade](https://developer.pagbank.com.br/reference/validacao-de-autenticidade). Guarde o valor de `public_key` (Base64 X.509) como `PAGBANK_SANDBOX_WEBHOOK_PUBLIC_KEY` em Secrets.
+4. Verifique `GET /api/checkout`: `provedor=pagbank`, `modo=teste`, `habilitado=true` significam apenas que as variáveis exigidas existem, **não** que o PagBank confirmou credenciais, webhook ou a habilitação do método Pix.
+5. Teste o checkout Pix/cartão, recusa, pagamento pendente e eventos assinados antes de qualquer produção.
+
+**Bloqueio em duas camadas:** além de exigir `PAGBANK_LIVE_ENABLED=true` e credenciais de produção, o código contém `LIVE_RELEASE_APPROVED=false`, que impede **qualquer ativação real nesta versão**. A remoção dessa trava exige uma revisão futura específica de lançamento, com correções de estoque, expiração, pagamentos e homologação da conta. Inserir tokens de produção sozinho não liberará cobranças.
+
+O PagBank usa `Authorization: Bearer <token>` na API atual de Checkout, mesmo que o token tenha sido gerado no menu de produção. Isso não autoriza misturar token live com endpoint Sandbox.
+
+Referências oficiais:
+- [Token de autenticação](https://developer.pagbank.com.br/docs/token-de-autenticacao)
+- [Criar Checkout](https://developer.pagbank.com.br/reference/criar-checkout)
+- [Validação de autenticidade dos webhooks](https://developer.pagbank.com.br/reference/validacao-de-autenticidade)
+- [Crie sua conta e homologação](https://developer.pagbank.com.br/docs/crie-sua-conta-pagbank)
+
 ## Segredos privados no Base44
 
 No editor do site, configure os segredos em área própria **apenas após criar sua conta PagBank**. Nunca publique tokens em conversas, front-end, GitHub ou PDFs.
@@ -14,7 +37,7 @@ No editor do site, configure os segredos em área própria **apenas após criar 
 | `PAGBANK_SANDBOX_WEBHOOK_PUBLIC_KEY` | Chave pública **X.509 Base64** para validar a assinatura ECDSA-SHA256 | Homologação |
 | `PAGBANK_LIVE_TOKEN` | Token de produção da conta, após homologação | Apenas produção |
 | `PAGBANK_LIVE_WEBHOOK_PUBLIC_KEY` | Chave pública de produção correspondente | Apenas produção |
-| `PAGBANK_LIVE_ENABLED` | Valor exato `true` | **Somente após decisão explícita de ativar vendas** |
+| `PAGBANK_LIVE_ENABLED` | Valor exato `true`, **não suficiente nesta versão** por causa da trava no código | Somente após homologação e decisão explícita |
 
 Para consultar a chave pública do webhook, siga a documentação oficial de validação da autenticidade e a função `type=webhook`. Confirme com o PagBank qual URL de consulta está habilitada no ambiente da conta.
 
