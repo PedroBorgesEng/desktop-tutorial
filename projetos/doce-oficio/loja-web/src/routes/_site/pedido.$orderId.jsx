@@ -26,9 +26,23 @@ function PedidoPage() {
   const [atualizando, setAtualizando] = useState(false);
   const [erroConsulta, setErroConsulta] = useState("");
   // Apenas o retorno validado pelo servidor pode confirmar pagamento.
-  const pago = pedido?.pagamento_status === "pago" && pedido?.__confirmadoServidor === true;
+  const demonstracao = pedido?.demonstracao === true && pedido?.id === orderId;
+  const pago = !demonstracao && pedido?.pagamento_status === "pago" && pedido?.__confirmadoServidor === true;
 
   useEffect(() => {
+    if (/^SIM-[A-F0-9]{12}$/.test(orderId)) {
+      try {
+        const salvoDemo = window.sessionStorage.getItem(`doce-oficio:simulacao:${orderId}`);
+        const pedidoDemo = salvoDemo ? JSON.parse(salvoDemo) : null;
+        if (pedidoDemo?.demonstracao === true && pedidoDemo?.id === orderId) {
+          setPedido({ ...pedidoDemo, __confirmadoServidor: false });
+        }
+      } catch {
+        // A simulação só existe nesta aba; não há pedido no servidor.
+      }
+      setCarregado(true);
+      return undefined;
+    }
     try {
       const salvo = window.localStorage.getItem(`doce-oficio:pedido:${orderId}`);
       if (salvo) setPedido({ ...JSON.parse(salvo), pagamento_status: "pendente", __confirmadoServidor: false });
@@ -72,10 +86,10 @@ function PedidoPage() {
   if (!pedido) {
     return (
       <div className="mx-auto max-w-2xl px-6 py-24 text-center lg:px-10">
-        <h1 className="font-heading text-4xl font-light tracking-tight">Reserva não encontrada</h1>
+        <h1 className="font-heading text-4xl font-light tracking-tight">Pedido ou simulação não encontrado</h1>
         <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-muted-foreground">
-          O resumo desta reserva fica salvo apenas no navegador em que ela foi feita. Se você falou
-          com o ateliê, consulte pelo código enviado na confirmação.
+          As compras simuladas ficam disponíveis somente nesta aba do navegador
+          e não são registradas como pedidos reais. Para outra simulação, volte ao catálogo.
         </p>
         <Link
           to="/"
@@ -90,20 +104,26 @@ function PedidoPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-16 lg:px-10 lg:py-20">
-      <div className={`flex items-center gap-3 ${pago ? "text-primary" : "text-accent"}`}>
-        {pago ? (
+      <div className={`flex items-center gap-3 ${pago || demonstracao ? "text-primary" : "text-accent"}`}>
+        {pago || demonstracao ? (
           <CheckCircle2 className="h-6 w-6" aria-hidden="true" />
         ) : (
           <Clock className="h-6 w-6" aria-hidden="true" />
         )}
-        <p className="eyebrow">{pago ? "Pagamento confirmado" : "Aguardando pagamento"}</p>
+        <p className="eyebrow">{demonstracao ? "Simulação concluída · Nenhuma cobrança" : pago ? "Pagamento confirmado" : "Aguardando pagamento"}</p>
       </div>
 
       <h1 className="mt-4 font-heading text-4xl font-light tracking-tight sm:text-5xl">
-        {pago ? "Pedido confirmado." : "Pedido registrado."}
+        {demonstracao ? "Compra simulada com sucesso." : pago ? "Pedido confirmado." : "Pedido registrado."}
       </h1>
       <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">
-        {pago ? (
+        {demonstracao ? (
+          <>
+            Este é um <strong className="text-foreground">exemplo acadêmico</strong> de
+            finalização de compra. O PagBank não foi acionado, não existe pagamento
+            confirmado e nenhum pedido ou reserva foi criado no servidor.
+          </>
+        ) : pago ? (
           <>
             Pagamento confirmado pelo provedor e encomenda prevista para{" "}
             <strong className="text-foreground">{formatarData(pedido.data_desejada)}</strong>.
@@ -118,12 +138,12 @@ function PedidoPage() {
         )}
       </p>
 
-      {retorno === "falha" && !pago && (
+      {retorno === "falha" && !pago && !demonstracao && (
         <p className="mt-6 border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
           O checkout foi interrompido ou recusado. Nenhuma confirmação de pagamento foi recebida.
         </p>
       )}
-      {retorno === "pendente" && !pago && (
+      {retorno === "pendente" && !pago && !demonstracao && (
         <p className="mt-6 border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
           Pagamento Pix pendente. Aguarde a confirmação automática do PagBank.
         </p>
@@ -138,7 +158,7 @@ function PedidoPage() {
           <span
             className={`border px-3 py-1 text-[11px] uppercase tracking-[0.16em] ${classeStatus(pedido.status)}`}
           >
-            {rotuloStatus(pedido.status)}
+            {demonstracao ? "DEMONSTRAÇÃO" : rotuloStatus(pedido.status)}
           </span>
         </div>
 
@@ -200,7 +220,11 @@ function PedidoPage() {
           <div>
             <dt className="eyebrow">Pagamento</dt>
             <dd className="mt-1">
-              {pago
+              {demonstracao
+                ? pedido.pagamento === "pix"
+                  ? "Pix simulado — nenhum valor transferido"
+                  : "Cartão simulado — nenhuma cobrança realizada"
+                : pago
                 ? pedido.pagamento === "pix"
                   ? "Pagamento por Pix confirmado"
                   : pedido.pagamento === "credito" || pedido.pagamento === "debito"
@@ -212,7 +236,7 @@ function PedidoPage() {
         </dl>
       </div>
 
-      {session_id && !pago && (
+      {session_id && !pago && !demonstracao && (
         <div className="mt-6">
           <button
             type="button"
@@ -256,7 +280,9 @@ function PedidoPage() {
           Voltar ao catálogo
         </Link>
         <p className="px-2 py-4 text-xs text-muted-foreground">
-          Para dúvidas sobre a encomenda, utilize o canal de atendimento informado pelo estabelecimento.
+          {demonstracao
+            ? "Demonstração local para fins acadêmicos. Não envie dinheiro nem prepare a encomenda."
+            : "Para dúvidas sobre a encomenda, utilize o canal de atendimento informado pelo estabelecimento."}
         </p>
       </div>
     </div>

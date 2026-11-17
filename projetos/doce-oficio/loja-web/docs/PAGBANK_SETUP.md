@@ -132,3 +132,9 @@ As integrações Mercado Pago e Stripe anteriores ficam no código para pedidos 
 - https://developer.pagbank.com.br/reference/webhooks-checkout
 
 **A integração permanece em homologação. Há segredos Sandbox configurados e 17 testes automatizados aprovados, mas nenhuma validação ponta a ponta com a conta PagBank foi comprovada. Vendas reais continuam bloqueadas pelo código.**
+
+## Compra fictícia para apresentação acadêmica
+
+O site agora oferece o botão **Simular compra — sem pagamento**, com escolha entre Pix fictício e cartão fictício. O resumo é gerado localmente, identificado por `SIM-...`, sem transação PagBank, sem pedido no banco e sem reserva/baixa de estoque. O recurso é público apenas para demonstração didática e **NÃO representa homologação da API PagBank** nem pagamento Sandbox autenticado. Para comprovação da homologação, é indispensável executar requisições reais em Sandbox e guardar os respectivos requests/responses mascarados.
+
+A interface de demonstração passou em mais 3 testes, totalizando **20 testes automatizados aprovados** no projeto; `npm run build` e `npm run lint` também aprovados.

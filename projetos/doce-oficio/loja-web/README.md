@@ -35,7 +35,7 @@ Leia [docs/PAGBANK_SETUP.md](docs/PAGBANK_SETUP.md). Tokens e chave pública do 
 
 **Importante:** novos pedidos usam `ledger_v2`, que não desconta estoque antes do pagamento e libera reservas expiradas do cálculo. Ainda falta reserva transacional para impedir concorrência sobre a última unidade; estornos/cancelamentos, testes ponta a ponta, mitigação de bots e homologação obrigatória também estão pendentes. **Não usar para cobrança real.**
 
-**Verificações executadas:** `node --test tests/pagbank-*.test.mjs` (17/17 aprovados), `npm run build` e `npm run lint` (aprovados). Não houve teste autenticado com a conta PagBank. O app preserva arquivos de integrações anteriores Mercado Pago e Stripe para histórico/legado, mas o carrinho usa o PagBank.
+**Verificações executadas:** `node --test tests/compra-demo.test.mjs tests/pagbank-*.test.mjs` (20/20 aprovados), `npm run build` e `npm run lint` (aprovados). Não houve teste autenticado com a conta PagBank. O app preserva arquivos de integrações anteriores Mercado Pago e Stripe para histórico/legado, mas o carrinho usa o PagBank.
 
 ## GitHub
 
@@ -49,3 +49,12 @@ A publicação entre Base44 e GitHub é **manual**. O código espelhado fica em 
 - https://developer.pagbank.com.br/reference/validacao-de-autenticidade
 
 Não são armazenados segredos nem dados pessoais no repositório.
+
+## Demonstração de compra para apresentação
+
+A loja pública inclui uma **simulação local** independente de PagBank. Acesse o catálogo, adicione um produto ao carrinho, clique em **Preencher dados fictícios**, selecione **Pix simulado** ou **Cartão simulado** e clique em **Simular compra — sem pagamento**. A tela final mostra o resumo com código `SIM-...` e declaração explícita de que **nenhuma cobrança foi realizada**.
+
+- A simulação não chama API PagBank e não constitui teste de homologação.
+- Não cria Pedido nem altera estoque no Base44.
+- Não persiste dados pessoais do formulário no recibo; a simulação fica apenas em `sessionStorage` na mesma aba.
+- O checkout PagBank Sandbox real permanece restrito a administrador autenticado. A produção continua bloqueada por `LIVE_RELEASE_APPROVED=false`.

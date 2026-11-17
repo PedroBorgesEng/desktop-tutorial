@@ -4,6 +4,7 @@ import { Loader2, Minus, Plus, Trash2 } from "lucide-react";
 import { Image } from "@/components/ui/image";
 import { useCart } from "@/lib/cart";
 import { formatBRL } from "@/lib/format";
+import { montarCompraDemonstrativa } from "@/lib/compra-demo";
 import { PERIODOS, TAXA_ENTREGA, TIPOS_ENTREGA } from "@/lib/pedido-constantes";
 
 export const Route = createFileRoute("/_site/carrinho")({
@@ -36,6 +37,7 @@ function CarrinhoPage() {
   const [dataMinima, setDataMinima] = useState("");
   const [prazoDias, setPrazoDias] = useState(2);
   const [pagamentos, setPagamentos] = useState(null);
+  const [metodoDemo, setMetodoDemo] = useState("pix");
 
   useEffect(() => {
     let ativo = true;
@@ -70,6 +72,29 @@ function CarrinhoPage() {
 
     if (itens.length === 0) {
       setErro("Sua reserva está vazia.");
+      return;
+    }
+    if (evento.nativeEvent?.submitter?.value === "demonstracao") {
+      if (form.data_desejada < dataMinima) {
+        setErro("Escolha uma data respeitando a antecedência mínima.");
+        return;
+      }
+      try {
+        const pedidoDemo = montarCompraDemonstrativa({
+          form, itens, taxaEntrega: TAXA_ENTREGA, metodo: metodoDemo,
+          uuid: window.crypto.randomUUID(),
+        });
+        // Simulação local; não chama o PagBank, não cria pedido no banco
+        // e não reserva estoque. Dados pessoais do formulário não são salvos.
+        window.sessionStorage.setItem(
+          `doce-oficio:simulacao:${pedidoDemo.id}`,
+          JSON.stringify(pedidoDemo)
+        );
+        limpar();
+        window.location.assign(`/pedido/${encodeURIComponent(pedidoDemo.id)}`);
+      } catch (falha) {
+        setErro(falha?.message || "Não foi possível gerar a simulação.");
+      }
       return;
     }
     if (!pagamentos?.habilitado) {
@@ -213,7 +238,24 @@ function CarrinhoPage() {
         </div>
 
         <form onSubmit={enviar} className="border border-border bg-card p-6 lg:p-8">
-          <h2 className="font-heading text-2xl font-normal">Dados da reserva</h2>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="font-heading text-2xl font-normal">Dados da reserva</h2>
+            <button
+              type="button"
+              onClick={() => setForm({
+                ...FORM_INICIAL,
+                nome_cliente: "Cliente de Teste",
+                telefone: "(41) 99999-0000",
+                tipo_entrega: "retirada",
+                data_desejada: dataMinima || form.data_desejada,
+                periodo: "tarde",
+                observacoes: "Exemplo para apresentação acadêmica",
+              })}
+              className="border border-border px-3 py-2 text-xs font-medium text-foreground/80 hover:border-accent"
+            >
+              Preencher dados fictícios
+            </button>
+          </div>
 
           <div className="mt-6 space-y-4">
             <div>
@@ -379,8 +421,44 @@ function CarrinhoPage() {
             </p>
           )}
 
+          <div className="mt-7 border border-accent/30 bg-accent/5 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.15em]">Demonstração acadêmica</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Conclua uma compra fictícia para apresentar o sistema. Não há cobrança,
+              pedido real, alteração de estoque ou acesso ao PagBank.
+            </p>
+            <fieldset className="mt-4">
+              <legend className="text-xs font-medium">Pagamento fictício</legend>
+              <div className="mt-2 flex flex-wrap gap-5 text-sm">
+                <label className="flex items-center gap-2">
+                  <input type="radio" name="metodo_demo" value="pix"
+                    checked={metodoDemo === "pix"}
+                    onChange={() => setMetodoDemo("pix")} />
+                  Pix simulado
+                </label>
+                <label className="flex items-center gap-2">
+                  <input type="radio" name="metodo_demo" value="credito"
+                    checked={metodoDemo === "credito"}
+                    onChange={() => setMetodoDemo("credito")} />
+                  Cartão simulado
+                </label>
+              </div>
+            </fieldset>
+            <button
+              type="submit"
+              name="fluxo"
+              value="demonstracao"
+              disabled={enviando}
+              className="mt-4 inline-flex w-full items-center justify-center bg-accent px-6 py-4 text-xs font-medium uppercase tracking-[0.12em] text-accent-foreground transition-colors hover:opacity-90 disabled:opacity-50"
+            >
+              Simular compra — sem pagamento
+            </button>
+          </div>
+
           <button
             type="submit"
+            name="fluxo"
+            value="pagbank"
             disabled={enviando || !pagamentos?.habilitado}
             className="mt-6 inline-flex w-full items-center justify-center gap-2 bg-primary px-7 py-4 text-[11px] font-medium uppercase tracking-[0.18em] text-primary-foreground transition-colors hover:bg-accent disabled:opacity-60"
           >
