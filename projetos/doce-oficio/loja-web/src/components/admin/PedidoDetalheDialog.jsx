@@ -32,6 +32,20 @@ export default function PedidoDetalheDialog({ pedido, open, onOpenChange, onAtua
   if (!pedido) return null;
 
   async function salvar() {
+    // Um checkout remoto pode ser pago após o cancelamento local.
+    // Não permitir cancelamento/fulfillment pelo painel enquanto o PagBank
+    // ainda pode cobrar; primeiro conciliar/inativar no provedor.
+    if (pedido.pagamento_gateway === "pagbank") {
+      if (status === "cancelado") {
+        toast.error("Para cancelar, inative o checkout ou estorne no PagBank e concilie o pedido.");
+        return;
+      }
+      if (pedido.pagamento_status !== "pago" &&
+          !["novo"].includes(status)) {
+        toast.error("Aguardando confirmação oficial do PagBank antes de avançar o pedido.");
+        return;
+      }
+    }
     setSalvando(true);
     try {
       await base44.entities.Pedido.update(pedido.id, { status, pagamento });

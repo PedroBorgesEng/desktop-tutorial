@@ -1,4 +1,5 @@
 import { secrets } from "base44:runtime";
+import { validarAssinaturaECDSA } from "@/lib/pagbank-assinatura";
 
 /**
  * Checkout PagBank hospedado. Nenhum dado de cartão é capturado aqui.
@@ -49,6 +50,7 @@ async function pagbankFetch(path, init = {}) {
   if (!/^\/(?:checkouts|orders)\/?[A-Za-z0-9/_-]*$/.test(path)) throw new Error("Rota PagBank inválida.");
   const response = await fetch(api + path, {
     ...init,
+    signal: AbortSignal.timeout(12000),
     headers: {
       Authorization: "Bearer " + token,
       Accept: "application/json",
@@ -109,7 +111,13 @@ export async function criarCheckoutPagBank(pedido, consultaToken) {
   if (!data?.id || !/^CHEC_[A-Za-z0-9-]+$/.test(data.id) || !trusted) {
     throw new Error("O PagBank não retornou um link seguro de pagamento.");
   }
-  return { id: data.id, url: parsed.toString(), mode: statusPagBank().mode };
+  // O Checkout PagBank expira por padrão em duas horas. Se a resposta
+  // informar a expiração, ela é a autoridade para a reserva local.
+  const remoteExpires = Date.parse(String(data.expiration_date || ""));
+  const expirationDate = Number.isFinite(remoteExpires)
+    ? new Date(remoteExpires).toISOString()
+    : new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString();
+  return { id: data.id, url: parsed.toString(), mode: statusPagBank().mode, expirationDate };
 }
 
 /**
@@ -117,69 +125,9 @@ export async function criarCheckoutPagBank(pedido, consultaToken) {
  * e chave pública X.509 (Base64). WebCrypto espera r||s; convertemos a
  * assinatura ASN.1 DER recebida para P1363.
  */
-export function derToP1363(signature, length = 32) {
-  const bytes = signature instanceof Uint8Array ? signature : new Uint8Array(signature);
-  let index = 0;
-  if (bytes[index++] !== 0x30) throw new Error("Assinatura DER inválida");
-  function readLength() {
-    let n = bytes[index++];
-    if (n < 128) return n;
-    const count = n & 0x7f;
-    if (count < 1 || count > 2 || index + count > bytes.length) throw new Error("DER inválido");
-    n = 0;
-    for (let i = 0; i < count; i++) n = n * 256 + bytes[index++];
-    return n;
-  }
-  const end = index + readLength();
-  if (end !== bytes.length) throw new Error("DER inválido");
-  const halves = [];
-  for (let half = 0; half < 2; half++) {
-    if (bytes[index++] !== 0x02) throw new Error("Inteiro DER inválido");
-    const n = readLength();
-    if (n < 1 || index + n > end) throw new Error("Inteiro DER inválido");
-    let value = bytes.slice(index, index + n);
-    index += n;
-    while (value.length > length && value[0] === 0) value = value.slice(1);
-    if (value.length > length) throw new Error("Inteiro DER excede tamanho");
-    const part = new Uint8Array(length);
-    part.set(value, length - value.length);
-    halves.push(part);
-  }
-  if (index !== end) throw new Error("DER contém dados extras");
-  const result = new Uint8Array(length * 2);
-  result.set(halves[0], 0);
-  result.set(halves[1], length);
-  return result;
-}
-
-function decodeB64(s) {
-  const base64 = String(s).trim();
-  if (!/^[A-Za-z0-9+/]+={0,2}$/.test(base64)) throw new Error("Base64 inválido");
-  const str = atob(base64);
-  return Uint8Array.from(str, c => c.charCodeAt(0));
-}
-
 export async function validarAssinaturaPagBank(rawBody, signatures) {
   const { publicKey } = credenciais();
-  if (!publicKey || !rawBody || !signatures) return false;
-  let imported;
-  try {
-    imported = await crypto.subtle.importKey("spki", decodeB64(publicKey),
-      { name: "ECDSA", namedCurve: "P-256" }, false, ["verify"]);
-  } catch {
-    console.error("Chave pública PagBank mal configurada.");
-    return false;
-  }
-  const body = new TextEncoder().encode(rawBody);
-  const list = Array.isArray(signatures) ? signatures : [signatures];
-  for (const chunk of list.flatMap(s => String(s).split(","))) {
-    try {
-      const rawSignature = derToP1363(decodeB64(chunk.trim()));
-      if (await crypto.subtle.verify({ name: "ECDSA", hash: "SHA-256" },
-        imported, rawSignature, body)) return true;
-    } catch { /* tentar a próxima assinatura */ }
-  }
-  return false;
+  return validarAssinaturaECDSA(rawBody, signatures, publicKey);
 }
 
 export async function consultarCheckoutPagBank(checkoutId) {

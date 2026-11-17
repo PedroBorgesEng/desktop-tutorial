@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { TAXA_ENTREGA } from "@/lib/pedido-constantes";
+import { MODELO_ESTOQUE, RESERVA_MS, validarDisponibilidade } from "@/lib/estoque-ledger.server";
 
 const itemSchema = z.object({
   produto_id: z.string().min(1).max(120),
@@ -54,7 +55,7 @@ function prazoDe(produto) {
 /**
  * Regra de negócio do pedido, no servidor:
  * relê os preços do catálogo (o navegador nunca define valores), confere lote e prazo,
- * baixa o estoque e grava o pedido aguardando pagamento.
+ * verifica as reservas e grava o pedido aguardando pagamento SEM baixar o estoque.
  */
 export async function criarPedido(base44ServiceRole, dados) {
   if (dados.tipo_entrega === "entrega" && (dados.endereco || "").length < 10) {
@@ -87,10 +88,14 @@ export async function criarPedido(base44ServiceRole, dados) {
     if (!produto || produto.disponivel === false) {
       throw new Error("Um dos itens do pedido não está mais disponível. Atualize o carrinho.");
     }
+    const preco = Number(produto.preco);
+    if (!Number.isFinite(preco) || preco <= 0 || Math.abs(Math.round(preco * 100) - preco * 100) > 1e-6) {
+      throw new Error("Preço inválido; contate o ateliê.");
+    }
     return {
       produto_id: produto.id,
       nome: produto.nome,
-      preco_unitario: Number(produto.preco),
+      preco_unitario: preco,
       quantidade: item.quantidade,
     };
   });
@@ -124,6 +129,8 @@ export async function criarPedido(base44ServiceRole, dados) {
   const taxa_entrega = dados.tipo_entrega === "entrega" ? TAXA_ENTREGA : 0;
   const total = Number((subtotal + taxa_entrega).toFixed(2));
 
+  // Reconta reservas pendentes ainda válidas e pedidos pagos da versão v2.
+  await validarDisponibilidade(base44ServiceRole, itens);
   const pedido = await base44ServiceRole.entities.Pedido.create({
     codigo: gerarCodigo(),
     nome_cliente: dados.nome_cliente,
@@ -141,18 +148,13 @@ export async function criarPedido(base44ServiceRole, dados) {
     status: "novo",
     pagamento: "online",
     pagamento_status: "pendente",
+    estoque_modelo: MODELO_ESTOQUE,
+    reserva_expira_em: new Date(Date.now() + RESERVA_MS).toISOString(),
   });
 
-  // Baixa do lote: só para produtos com estoque controlado.
-  await Promise.all(
-    [...quantidades].map(([produtoId, quantidade]) => {
-      const produto = catalogo.get(produtoId);
-      if (estoqueDe(produto) === null) return null;
-      return base44ServiceRole.entities.Produto.update(produtoId, {
-        estoque: Number(produto.estoque) - quantidade,
-      });
-    })
-  );
+  // Não altera Produto.estoque: abatimento antecipado provocava perda de
+  // unidades em carrinhos abandonados e reembolso duplo em erros de checkout.
+  // O ledger_v2 calcula unidades comprometidas a partir de Pedidos.
 
   return {
     id: pedido.id,

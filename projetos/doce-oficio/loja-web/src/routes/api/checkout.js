@@ -1,28 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { criarPedido, esquemaReserva } from "@/lib/reservas.server";
+import { validarDisponibilidade } from "@/lib/estoque-ledger.server";
 import { criarCheckoutPagBank, statusPagBank } from "@/lib/pagbank.server";
 
 /**
- * Compensação de erro de checkout; não substitui transação de estoque.
- * Não habilitar vendas reais antes de testar concorrência e expiração.
+ * Cancelamento de pedido provisório se não foi possível criar checkout.
+ * Estoque não é mais baixado antes do pagamento.
  */
 async function compensarErro(base44, pedido) {
   if (!pedido?.id) return;
   try {
-    const quantidades = new Map();
-    for (const item of pedido.itens || []) {
-      quantidades.set(item.produto_id,
-        (quantidades.get(item.produto_id) || 0) + Number(item.quantidade));
-    }
-    for (const [id, qtd] of quantidades) {
-      const produto = await base44.entities.Produto.get(id);
-      if (produto?.estoque !== null &&
-          produto?.estoque !== undefined && produto?.estoque !== "") {
-        await base44.entities.Produto.update(id, {
-          estoque: Number(produto.estoque) + qtd,
-        });
-      }
-    }
     await base44.entities.Pedido.update(pedido.id, {
       status: "cancelado",
       pagamento_status: "cancelado",
@@ -35,12 +22,21 @@ async function compensarErro(base44, pedido) {
 export const Route = createFileRoute("/api/checkout")({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async ({ context }) => {
         const config = statusPagBank();
+        let habilitado = config.enabled;
+        if (config.mode === "teste") {
+          try {
+            const usuario = await context.getBase44().auth.me();
+            habilitado = Boolean(usuario?.role === "admin");
+          } catch {
+            habilitado = false;
+          }
+        }
         return Response.json({
           provedor: "pagbank",
           metodos: ["pix", "cartao"],
-          habilitado: config.enabled,
+          habilitado,
           modo: config.mode,
         }, { headers: { "Cache-Control": "no-store" } });
       },
@@ -51,6 +47,17 @@ export const Route = createFileRoute("/api/checkout")({
           return Response.json({
             erro: "Pix e cartão pelo PagBank ainda não estão disponíveis. Aguardando ativação da conta.",
           }, { status: 503 });
+        }
+        // Sandbox é exclusivo do administrador: impede que visitantes
+        // criem pagamentos de teste falsos e ocupem reservas do catálogo.
+        if (config.mode === "teste") {
+          let usuario;
+          try { usuario = await context.getBase44().auth.me(); } catch { /* não autenticado */ }
+          if (usuario?.role !== "admin") {
+            return Response.json({
+              erro: "Checkout de testes disponível somente ao administrador autenticado.",
+            }, { status: 403 });
+          }
         }
         let raw;
         try {
@@ -69,14 +76,19 @@ export const Route = createFileRoute("/api/checkout")({
         }
         const base44 = context.getBase44().asServiceRole;
         let pedido;
+        let checkout;
         try {
           pedido = await criarPedido(base44, result.data);
+          // Segunda verificação após registrar a reserva; reduz colisões
+          // simples, mas não substitui uma transação atômica no banco.
+          await validarDisponibilidade(base44, pedido.itens);
           const tokenConsulta = crypto.randomUUID();
-          const checkout = await criarCheckoutPagBank(pedido, tokenConsulta);
+          checkout = await criarCheckoutPagBank(pedido, tokenConsulta);
           await base44.entities.Pedido.update(pedido.id, {
             pagamento_gateway: "pagbank",
             pagbank_checkout_id: checkout.id,
             pagbank_env: checkout.mode,
+            reserva_expira_em: checkout.expirationDate,
             consulta_token: tokenConsulta,
           });
           return Response.json({
@@ -91,7 +103,12 @@ export const Route = createFileRoute("/api/checkout")({
             },
           }, { status: 201 });
         } catch (error) {
-          if (pedido) await compensarErro(base44, pedido);
+          if (pedido && !checkout) await compensarErro(base44, pedido);
+          // Um checkout remoto já criado não deve ser cancelado localmente
+          // sem primeiro inativar o checkout na API do PagBank.
+          if (pedido && checkout) {
+            console.error("RECONCILIACAO_PAGBANK", pedido.id, checkout.id);
+          }
           console.error("Checkout PagBank:", error?.message);
           return Response.json({
             erro: error?.message || "Falha ao iniciar pagamento. Tente novamente.",

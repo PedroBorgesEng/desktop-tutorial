@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { conferirPagamentoPagBank } from "@/lib/pagbank-regras";
 import {
   statusPagBank,
   validarAssinaturaPagBank,
@@ -53,6 +54,22 @@ export const Route = createFileRoute("/api/pagbank-webhook")({
             orders.push(eventId);
           }
 
+          // Só encerrar automaticamente checkout expirado quando a própria
+          // API confirmar a expiração e não houver pagamentos associados.
+          // A reserva também deixa de contar após seu horário limite local.
+          if (checkout?.status === "EXPIRED" && orders.length === 0 && checkout.reference_id) {
+            const base44 = context.getBase44().asServiceRole;
+            const pedidoExpirado = await base44.entities.Pedido.get(String(checkout.reference_id));
+            if (pedidoExpirado?.pagbank_checkout_id === checkout.id &&
+                pedidoExpirado?.pagamento_gateway === "pagbank" &&
+                pedidoExpirado?.pagamento_status === "pendente") {
+              await base44.entities.Pedido.update(pedidoExpirado.id, {
+                status: "cancelado",
+                pagamento_status: "cancelado",
+              });
+            }
+          }
+
           for (const id of orders) {
             // A consulta autenticada é a fonte de verdade, NÃO o webhook recebido.
             const remote = await consultarPedidoPagBank(id);
@@ -62,29 +79,23 @@ export const Route = createFileRoute("/api/pagbank-webhook")({
             const pedido = await base44.entities.Pedido.get(pedidoId);
             if (!pedido || pedido.pagamento_gateway !== "pagbank" ||
                 !pedido.pagbank_checkout_id ||
-                pedido.pagbank_env !== statusPagBank().mode ||
-                pedido.status === "cancelado" ||
-                pedido.pagamento_status === "cancelado" ) {
+                pedido.pagbank_env !== statusPagBank().mode) {
               continue;
             }
             if (checkout && pedido.pagbank_checkout_id !== checkout.id) continue;
             if (pedido.pagamento_status === "pago") continue; // Evento repetido
 
-            const charges = Array.isArray(remote?.charges) ? remote.charges : [];
-            const paid = charges.filter(c => c.status === "PAID" &&
-              c.amount?.currency === "BRL" &&
-              ["PIX", "CREDIT_CARD"].includes(c.payment_method?.type));
-            const received = paid.reduce((s, c) => s + Number(c.amount.value), 0);
-            const expected = Math.round(Number(pedido.total) * 100);
-            if (!Number.isInteger(expected) || expected <= 0 ||
-                !Number.isInteger(received) || received !== expected) {
-              continue;
+            const confirmacao = conferirPagamentoPagBank(remote, pedido, pedidoId);
+            if (!confirmacao) continue;
+            // Não ignorar fundos efetivamente capturados se o pedido foi
+            // cancelado localmente: recuperar para revisão de atendimento.
+            if (pedido.status === "cancelado" || pedido.pagamento_status === "cancelado") {
+              console.error("PAGAMENTO_APOS_CANCELAMENTO_REVISAR", pedidoId);
             }
-            const method = paid.some(c => c.payment_method?.type === "PIX") ? "pix" : "credito";
             await base44.entities.Pedido.update(pedidoId, {
               pagamento_status: "pago",
-              pagamento: method,
-              pagbank_order_id: String(remote.id),
+              ...confirmacao,
+              ...(pedido.status === "cancelado" ? { status: "novo" } : {}),
             });
           }
           return Response.json({ recebido: true });

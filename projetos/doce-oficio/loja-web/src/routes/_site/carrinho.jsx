@@ -73,7 +73,9 @@ function CarrinhoPage() {
       return;
     }
     if (!pagamentos?.habilitado) {
-      setErro("Pix e cartão pelo PagBank ainda não estão disponíveis. Aguarde a configuração da loja.");
+      setErro(pagamentos?.modo === "teste"
+        ? "A loja está em homologação. O checkout Sandbox é reservado ao administrador autenticado."
+        : "Pix e cartão pelo PagBank ainda não estão disponíveis. Aguarde a configuração da loja.");
       return;
     }
 
@@ -383,7 +385,7 @@ function CarrinhoPage() {
             className="mt-6 inline-flex w-full items-center justify-center gap-2 bg-primary px-7 py-4 text-[11px] font-medium uppercase tracking-[0.18em] text-primary-foreground transition-colors hover:bg-accent disabled:opacity-60"
           >
             {enviando && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
-            {enviando ? "Abrindo pagamento..." : pagamentos?.habilitado ? "Pagar com Pix ou cartão" : "Pagamento aguardando ativação"}
+            {enviando ? "Abrindo pagamento..." : pagamentos?.habilitado ? "Pagar com Pix ou cartão" : pagamentos?.modo === "teste" ? "Pagamento em homologação" : "Pagamento aguardando ativação"}
           </button>
 
           <p className="mt-3 text-center text-xs text-muted-foreground">
@@ -391,7 +393,9 @@ function CarrinhoPage() {
           </p>
           {!pagamentos?.habilitado && (
             <p role="status" className="mt-2 text-center text-xs text-amber-800">
-              A conta PagBank da loja ainda não está configurada. Não há cobranças nem criação de novos pedidos.
+              {pagamentos?.modo === "teste"
+                ? "Checkout de testes restrito ao administrador autenticado. Nenhuma cobrança real está habilitada."
+                : "Pagamento ainda não disponível. Não há cobranças nem criação de novos pedidos."}
             </p>
           )}
         </form>

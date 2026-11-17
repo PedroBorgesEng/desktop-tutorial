@@ -180,7 +180,7 @@ export default function ProdutoDialog({ open, onOpenChange, produto, onSalvo }) 
               />
             </div>
             <div>
-              <Label htmlFor="p-estoque">Estoque do lote</Label>
+              <Label htmlFor="p-estoque">Capacidade do lote (antes das reservas)</Label>
               <Input
                 id="p-estoque"
                 type="number"

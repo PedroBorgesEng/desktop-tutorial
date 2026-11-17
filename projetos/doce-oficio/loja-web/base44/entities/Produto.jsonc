@@ -49,7 +49,7 @@
     },
     "estoque": {
       "type": "number",
-      "description": "Unidades dispon\u00edveis neste lote. Vazio significa sem limite."
+      "description": "Capacidade bruta/residual do lote (pedidos legados j\u00e1 baixados); novos pedidos ledger_v2 t\u00eam reservas descontadas do saldo exibido. Vazio = sem limite."
     },
     "prazo_dias": {
       "type": "number",

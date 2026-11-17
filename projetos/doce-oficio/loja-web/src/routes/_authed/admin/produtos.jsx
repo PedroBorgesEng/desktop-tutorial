@@ -93,7 +93,7 @@ function ProdutosPage() {
                     {produto.porcao ? ` · ${produto.porcao}` : ""}
                     {produto.estoque == null
                       ? " · sem limite"
-                      : ` · ${produto.estoque} em estoque`}
+                      : ` · capacidade do lote: ${produto.estoque}`}
                     {produto.prazo_dias ? ` · ${produto.prazo_dias}d de prazo` : ""}
                   </p>
                 </div>

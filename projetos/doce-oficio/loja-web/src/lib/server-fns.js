@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { esquemaReserva } from "@/lib/reservas.server";
+import { aplicarDisponibilidadeCatalogo } from "@/lib/estoque-ledger.server";
 
 export const getServerInfo = createServerFn({ method: "GET" }).handler(async () => ({
   renderedAt: new Date().toISOString(),
@@ -12,7 +13,13 @@ export const listarProdutos = createServerFn({ method: "GET" }).handler(async ({
     { disponivel: true },
     { sort: "nome", limit: 100 }
   );
-  return { produtos: pagina.items };
+  try {
+    return { produtos: await aplicarDisponibilidadeCatalogo(base44.asServiceRole, pagina.items) };
+  } catch (error) {
+    console.error("Não foi possível verificar disponibilidade do catálogo:", error?.message);
+    // Falha fechada para evitar exibir disponibilidade não comprovada.
+    return { produtos: pagina.items.map(p => ({ ...p, estoque: 0 })) };
+  }
 });
 
 export const buscarProduto = createServerFn({ method: "GET" })
@@ -21,7 +28,14 @@ export const buscarProduto = createServerFn({ method: "GET" })
     const base44 = context.getBase44();
     try {
       const produto = await base44.entities.Produto.get(data.id);
-      return { produto: produto?.disponivel === false ? null : produto };
+      if (!produto || produto.disponivel === false) return { produto: null };
+      try {
+        const [disponivel] = await aplicarDisponibilidadeCatalogo(base44.asServiceRole, [produto]);
+        return { produto: disponivel };
+      } catch (error) {
+        console.error("Disponibilidade de produto indisponível:", error?.message);
+        return { produto: { ...produto, estoque: 0 } };
+      }
     } catch (erro) {
       if (erro?.status === 404) return { produto: null };
       throw erro;

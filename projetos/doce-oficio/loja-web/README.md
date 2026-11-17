@@ -16,7 +16,10 @@
 - `GET /api/checkout`: retorna disponibilidade e ambiente PagBank.
 - `POST /api/checkout`: cria pedido provisório e checkout, **bloqueado com 503 sem credenciais**.
 - `POST /api/pagbank-webhook`: valida assinatura do corpo bruto com ECDSA SHA256, confirma Order com a API, verifica valor e referência, atualiza status.
-- `src/lib/pagbank.server.js`: integração PagBank e utilitários de validação.
+- `src/lib/pagbank.server.js`: integração PagBank e escolha explícita do ambiente.
+- `src/lib/pagbank-assinatura.js`: validação criptográfica ECDSA DER, testada.
+- `src/lib/pagbank-regras.js`: regra pura de confirmação de pagamento (referência/BRL/valor).
+- `src/lib/estoque-ledger.server.js`: cálculo de reservas pendentes e pagas sem baixa prematura de estoque.
 - `src/lib/reservas.server.js`: preços e validações de estoque/prazo no servidor.
 - `base44/entities/Pedido.jsonc`: campos de acompanhamento de pagamentos.
 - `src/routes/_site/`: catálogo, carrinho e pedido.
@@ -27,10 +30,12 @@
 Leia [docs/PAGBANK_SETUP.md](docs/PAGBANK_SETUP.md). Tokens e chave pública do webhook devem ser inseridos **somente nos segredos do Base44**, nunca no GitHub.
 
 - Teste: `PAGBANK_SANDBOX_TOKEN` e `PAGBANK_SANDBOX_WEBHOOK_PUBLIC_KEY`.
-- Produção: `PAGBANK_LIVE_TOKEN`, `PAGBANK_LIVE_WEBHOOK_PUBLIC_KEY` e `PAGBANK_LIVE_ENABLED=true`, **somente após homologação e autorização expressa do proprietário**.
+- Produção: `PAGBANK_LIVE_TOKEN`, `PAGBANK_LIVE_WEBHOOK_PUBLIC_KEY` e `PAGBANK_LIVE_ENABLED=true` ainda não habilitam pagamentos, pois `LIVE_RELEASE_APPROVED=false`. Essa trava só poderá ser revista após homologação, correção da concorrência e autorização explícita do proprietário.
 - Sem credenciais, a loja permanece pública para ver produtos, mas **não aceita pedidos nem pagamentos**.
 
-**Importante:** fluxo de estoque concorrente, reserva não paga, expiração, cancelamentos, reembolsos e testes end-to-end devem ser concluídos antes de qualquer ativação comercial. O app preserva arquivos de integrações anteriores Mercado Pago e Stripe para histórico/legado, mas o carrinho usa o PagBank.
+**Importante:** novos pedidos usam `ledger_v2`, que não desconta estoque antes do pagamento e libera reservas expiradas do cálculo. Ainda falta reserva transacional para impedir concorrência sobre a última unidade; estornos/cancelamentos, testes ponta a ponta, mitigação de bots e homologação obrigatória também estão pendentes. **Não usar para cobrança real.**
+
+**Verificações executadas:** `node --test tests/pagbank-*.test.mjs` (17/17 aprovados), `npm run build` e `npm run lint` (aprovados). Não houve teste autenticado com a conta PagBank. O app preserva arquivos de integrações anteriores Mercado Pago e Stripe para histórico/legado, mas o carrinho usa o PagBank.
 
 ## GitHub
 
