@@ -1,4 +1,4 @@
-# 🧁 Cupcake Gourmet — Projeto Integrador em Engenharia de Software II
+# 🧁 Doce Ofício (Cupcake Gourmet) — Projeto Integrador em Engenharia de Software II
 
 **Situação-Problema 2 · Implementação e testes de front-end/back-end · 11/11/2026**
 
@@ -129,6 +129,6 @@ Este MVP **não** implementa cobrança real, cálculo logístico por CEP, envio 
 **Referência do enunciado:** `PITESoftwareII.pdf`, seções "Situação-Problema 2" (páginas 32–34) e "Problema em Foco", Situação 2 (página 38). Linguagem escolhida entre as sugeridas pelo enunciado: **Python**.
 
 
-## Versão web publicada no Base44
+## Loja Doce Ofício — versão web publicada no Base44
 
-A versão do site ([acessar online](https://cupcake-gourmet-pite-ii-6e0cb87a.base44.app)) foi adicionada à pasta [`base44-site/`](./base44-site/). Seu front-end e back-end utilizam TanStack Start/JavaScript e as entidades Base44; a aplicação Python/FastAPI desta pasta continua sendo uma implementação alternativa e independente. Consulte [registro de sincronização](./docs/SINCRONIZACAO_BASE44.md) e [documentação da versão Base44 em PDF](https://base44.app/api/apps/6af46ee5dcb326846e0cb87a/files/mp/public/6af46ee5dcb326846e0cb87a/7b5f2e18c_Doce-Oficio-Documentacao-PITE-II.pdf).
+A versão do site ([acessar online](https://cupcake-gourmet-pite-ii-6e0cb87a.base44.app)) foi adicionada à pasta [`loja-web/`](./loja-web/). Seu front-end e back-end utilizam TanStack Start/JavaScript e as entidades Base44; a aplicação Python/FastAPI desta pasta continua sendo uma implementação alternativa e independente. Consulte [registro de sincronização](./docs/SINCRONIZACAO_BASE44.md) e [documentação da versão Base44 em PDF](https://base44.app/api/apps/6af46ee5dcb326846e0cb87a/files/mp/public/6af46ee5dcb326846e0cb87a/7b5f2e18c_Doce-Oficio-Documentacao-PITE-II.pdf).

@@ -13,7 +13,7 @@ Preparar a loja Doce Ofício (Cupcake Gourmet) para uma futura operação comerc
 - Aviso visível de homologação em páginas públicas e carrinho.
 - Desativado o `POST /api/pedidos` legado (410), que permitia reservar sem checkout.
 - Retorno do checkout fixado ao domínio oficial, não ao cabeçalho enviado pelo cliente.
-- Novo código sincronizado manualmente na pasta `base44-site` do repositório.
+- Novo código sincronizado manualmente na pasta `loja-web` do repositório.
 
 ## Verificação e status
 
@@ -36,7 +36,7 @@ Preparar a loja Doce Ofício (Cupcake Gourmet) para uma futura operação comerc
 ## Links
 
 - [Loja em homologação](https://cupcake-gourmet-pite-ii-6e0cb87a.base44.app)
-- [Código atual da versão Base44](../base44-site/)
+- [Código atual da versão Base44](../loja-web/)
 - [Documentação acadêmica em PDF](./Documentacao_Versao_Base44_Situacao_2.pdf)
 
 **Situação:** versão de homologação comercial publicada; ainda não apta a receber pagamentos reais.

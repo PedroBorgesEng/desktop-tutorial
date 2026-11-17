@@ -34,7 +34,7 @@ Leia [docs/PAGBANK_SETUP.md](docs/PAGBANK_SETUP.md). Tokens e chave pública do 
 
 ## GitHub
 
-A publicação entre Base44 e GitHub é **manual**. O código espelhado fica em `projetos/pite-ii-cupcake-gourmet/base44-site/` do repositório PedroBorgesEng/desktop-tutorial.
+A publicação entre Base44 e GitHub é **manual**. O código espelhado fica em `projetos/doce-oficio/loja-web/` do repositório PedroBorgesEng/desktop-tutorial.
 
 ## Referências técnicas oficiais
 
