@@ -27,6 +27,16 @@ Referências oficiais:
 - [Validação de autenticidade dos webhooks](https://developer.pagbank.com.br/reference/validacao-de-autenticidade)
 - [Crie sua conta e homologação](https://developer.pagbank.com.br/docs/crie-sua-conta-pagbank)
 
+## Revisão técnica 17/11/2026
+
+- Situação observada na configuração Base44: **nenhum segredo com prefixo PAGBANK estava cadastrado**. A presença de uma conta PagBank não equivale a uma conexão com este aplicativo.
+- A interface do pedido consulta a confirmação assinada pelo back-end durante aproximadamente um minuto e oferece botão **Atualizar situação do pagamento**. O retorno ao site nunca confirma um pagamento por si só.
+- A documentação oficial distingue eventos transacionais `PAID`, `WAITING`, `IN_ANALYSIS` e `DECLINED` e o evento de checkout `EXPIRED`. O webhook atual só considera `PAID` após verificar assinatura e consultar o Order. **Cancelamento por expiração, liberação de estoque e concorrência ainda não estão homologados**.
+- Testes reais de Sandbox e webhooks dependem de configurar os dois segredos Sandbox abaixo. Não executar tentativa de cobrança com token de produção exposto.
+- **A trava de produção `LIVE_RELEASE_APPROVED=false` permanece ativa** e não foi alterada.
+
+Referências: https://developer.pagbank.com.br/reference/webhooks-checkout e https://developer.pagbank.com.br/reference/validacao-de-autenticidade
+
 ## Segredos privados no Base44
 
 No editor do site, configure os segredos em área própria **apenas após criar sua conta PagBank**. Nunca publique tokens em conversas, front-end, GitHub ou PDFs.

@@ -23,6 +23,8 @@ function PedidoPage() {
   const buscarPedido = useServerFn(consultarPedido);
   const [pedido, setPedido] = useState(null);
   const [carregado, setCarregado] = useState(false);
+  const [atualizando, setAtualizando] = useState(false);
+  const [erroConsulta, setErroConsulta] = useState("");
   // Apenas o retorno validado pelo servidor pode confirmar pagamento.
   const pago = pedido?.pagamento_status === "pago" && pedido?.__confirmadoServidor === true;
 
@@ -39,8 +41,14 @@ function PedidoPage() {
 
     let ativo = true;
     (async () => {
-      for (let tentativa = 0; tentativa < 3; tentativa += 1) {
-        const resposta = await buscarPedido({ data: { id: orderId, sessao: session_id } });
+      for (let tentativa = 0; tentativa < 24; tentativa += 1) {
+        let resposta;
+        try {
+          resposta = await buscarPedido({ data: { id: orderId, sessao: session_id } });
+        } catch {
+          // A consulta pode falhar temporariamente; o usuário pode tentar de novo.
+          if (!ativo) return;
+        }
         if (!ativo) return;
         if (resposta?.pedido) {
           setPedido({ ...resposta.pedido, __confirmadoServidor: true });
@@ -105,7 +113,7 @@ function PedidoPage() {
           <>
             Estamos aguardando a confirmação do pagamento. Código{" "}
             <strong className="text-foreground">{pedido.codigo}</strong>. Se o pagamento não foi
-            concluído, refaça o pedido ou fale com o ateliê.
+            concluído, aguarde e confira o status antes de tentar comprar novamente.
           </>
         )}
       </p>
@@ -203,6 +211,41 @@ function PedidoPage() {
           </div>
         </dl>
       </div>
+
+      {session_id && !pago && (
+        <div className="mt-6">
+          <button
+            type="button"
+            disabled={atualizando}
+            onClick={async () => {
+              setAtualizando(true);
+              setErroConsulta("");
+              try {
+                const resposta = await buscarPedido({ data: { id: orderId, sessao: session_id } });
+                if (!resposta?.pedido) {
+                  setErroConsulta("Não foi possível consultar o pedido. Confira o link da confirmação.");
+                  return;
+                }
+                setPedido({ ...resposta.pedido, __confirmadoServidor: true });
+                window.localStorage.setItem(
+                  `doce-oficio:pedido:${orderId}`,
+                  JSON.stringify({ ...resposta.pedido, pagamento_status: "pendente" })
+                );
+              } catch {
+                setErroConsulta("Falha temporária. Tente consultar o pagamento novamente.");
+              } finally {
+                setAtualizando(false);
+              }
+            }}
+            className="border border-foreground/25 px-5 py-3 text-xs uppercase tracking-[0.12em] hover:border-foreground/50 disabled:opacity-50"
+          >
+            {atualizando ? "Consultando..." : "Atualizar situação do pagamento"}
+          </button>
+          {erroConsulta && (
+            <p role="alert" className="mt-3 text-sm text-destructive">{erroConsulta}</p>
+          )}
+        </div>
+      )}
 
       <div className="mt-8 flex flex-wrap gap-4">
         <Link
